@@ -1,4 +1,4 @@
-package Accessibility_Backend
+package main
 
 import (
 	"Accessibility-Backend/database"
