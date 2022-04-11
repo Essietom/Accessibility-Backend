@@ -25,9 +25,11 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 		utilities.ValidationResponse(errors, w)
 		return
 	}
-	v, _ := models.AddIssue(ish, webpageId)
-	//res, _ := json.Marshal(v)
-
+	v, err := models.AddIssue(ish, webpageId)
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
+	}
 	utilities.SuccessRespond(v, w)
 
 }

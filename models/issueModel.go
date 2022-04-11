@@ -3,14 +3,15 @@ package models
 import (
 	"Accessibility-Backend/database"
 	"Accessibility-Backend/entity"
+	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 //update website, add issue to issue object
-func AddIssue(issue *entity.Issue, websiteId string) (string, error) {
-	fmt.Println("the ish", issue)
+func AddIssue(issue *entity.Issue, websiteId string) (*entity.Issue, error) {
 
 	if issue.Criteria == nil {
 		issue.Criteria = make([]entity.Criteria, 0) // this is alloc free
@@ -22,7 +23,10 @@ func AddIssue(issue *entity.Issue, websiteId string) (string, error) {
 	}
 
 	objectId, err := primitive.ObjectIDFromHex(websiteId)
+
+	issue.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 	issue.ID = primitive.NewObjectID()
+
 	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": objectId},
 		bson.M{
 			"$push": bson.M{
@@ -31,16 +35,16 @@ func AddIssue(issue *entity.Issue, websiteId string) (string, error) {
 		},
 	)
 	if err != nil {
-		return "error occured", err
+		return nil, errors.New("some error occurred while entering issue")
 	}
 	if result.MatchedCount == 0 {
-		return "no match found", err
+		return nil, errors.New("webpage not found")
 	}
 	if result.ModifiedCount == 0 {
-		return "not updated", err
+		return nil, errors.New("issue could not be updated")
 	}
 
-	return "successful", err
+	return issue, err
 
 }
 
@@ -83,6 +87,51 @@ func GetAllIssuesforWebpageId(id string) ([]entity.Issue, error) {
 	}
 
 	return issues, nil
+}
+func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Issue, error) {
+	var issue entity.Issue
+	ishId, err := primitive.ObjectIDFromHex(issueId)
+	wpageId, err := primitive.ObjectIDFromHex(webpageId)
+	fmt.Println("issueId", ishId)
+	fmt.Println("webpageId", wpageId)
+	if err != nil {
+		return nil, err
+	}
+	cursor, err := database.WebpageCollection.
+		Aggregate(database.Ctx, bson.A{
+			bson.M{
+				"$match": bson.M{
+					"_id": wpageId,
+				},
+			},
+			bson.M{
+				"$unwind": "$issue",
+			},
+			bson.M{
+				"$match": bson.M{
+					"issue._id": ishId,
+				},
+			},
+			bson.M{
+				"$replaceRoot": bson.M{
+					"newRoot": "$issue",
+				},
+			},
+		},
+		)
+
+	fmt.Println("cursor", cursor)
+
+	for cursor.Next(database.Ctx) {
+		err := cursor.Decode(&issue)
+		if err != nil {
+			fmt.Println("final isah", &issue)
+			return &issue, err
+
+		}
+	}
+	fmt.Println("no error ish", &issue)
+	return &issue, nil
 }
 
 //update website websiteid, pull issue where issue id = issueid
