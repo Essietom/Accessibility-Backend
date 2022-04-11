@@ -137,12 +137,22 @@ func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Is
 	return &issue, nil
 }
 
-//update website websiteid, pull issue where issue id = issueid
-func DeleteIssue(id primitive.ObjectID) error {
-	_, err := database.WebpageCollection.DeleteOne(database.Ctx, bson.D{{"_id", id}})
+//update website websiteid, pull issue where webpage id = webpage and issue id = issueid
+func DeleteIssueByWebpageAndWebpageId(webpageId primitive.ObjectID, issueId primitive.ObjectID) error {
+	_, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
+		bson.M{
+			"$pull": bson.M{
+				"issue": bson.M{
+					"_id": issueId,
+				},
+			},
+		},
+	)
 	if err != nil {
 		return err
 	}
+	fmt.Println("nothing really happened")
+
 	return err
 }
 

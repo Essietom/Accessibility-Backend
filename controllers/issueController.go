@@ -99,11 +99,17 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func DeleteIssue(w http.ResponseWriter, r *http.Request) {
+func DeleteIssueByWebpageAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	primitiveId, _ := primitive.ObjectIDFromHex(webpageId)
-	vin := models.DeleteWebpage(primitiveId)
+	issueId := vars["issueId"]
+	wpageId, err := primitive.ObjectIDFromHex(webpageId)
+	ishId, err := primitive.ObjectIDFromHex(issueId)
+	if err != nil {
+		utilities.ErrorResponse(422, err.Error(), w)
+		return
+	}
+	vin := models.DeleteIssueByWebpageAndWebpageId(wpageId, ishId)
 	res, _ := json.Marshal(vin)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
