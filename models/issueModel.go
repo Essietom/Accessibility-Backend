@@ -138,8 +138,8 @@ func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Is
 }
 
 //update website websiteid, pull issue where webpage id = webpage and issue id = issueid
-func DeleteIssueByWebpageAndWebpageId(webpageId primitive.ObjectID, issueId primitive.ObjectID) error {
-	_, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
+func DeleteIssueByWebpageAndWebpageId(webpageId primitive.ObjectID, issueId primitive.ObjectID) (string, error) {
+	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
 		bson.M{
 			"$pull": bson.M{
 				"issue": bson.M{
@@ -149,11 +149,16 @@ func DeleteIssueByWebpageAndWebpageId(webpageId primitive.ObjectID, issueId prim
 		},
 	)
 	if err != nil {
-		return err
+		return "nil", errors.New("some error occurred")
 	}
-	fmt.Println("nothing really happened")
+	if result.MatchedCount == 0 {
+		return "nil", errors.New("no webpage found with the id provided")
+	}
+	if result.ModifiedCount == 0 {
+		return "nil", errors.New("no issue found for provided id,issue was not successfully updated")
+	}
 
-	return err
+	return "Issue was successfully deleted", nil
 }
 
 //db.users.update({_id:123}, {$set:{

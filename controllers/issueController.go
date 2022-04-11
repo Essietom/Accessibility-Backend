@@ -109,7 +109,11 @@ func DeleteIssueByWebpageAndWebpageId(w http.ResponseWriter, r *http.Request) {
 		utilities.ErrorResponse(422, err.Error(), w)
 		return
 	}
-	vin := models.DeleteIssueByWebpageAndWebpageId(wpageId, ishId)
+	vin, error := models.DeleteIssueByWebpageAndWebpageId(wpageId, ishId)
+	if error != nil {
+		utilities.ErrorResponse(500, error.Error(), w)
+		return
+	}
 	res, _ := json.Marshal(vin)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
