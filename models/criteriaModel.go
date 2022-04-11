@@ -9,12 +9,12 @@ import (
 )
 
 func CreateCriteria(v *entity.Criteria) (*entity.Criteria, error) {
-	result, err := database.CriteriaCollection.InsertOne(database.Ctx, v)
+	_, err := database.CriteriaCollection.InsertOne(database.Ctx, v)
 	if err != nil {
 		fmt.Println("unable to insert record", err)
 		return nil, err
 	}
-	v.ID = result.InsertedID.(primitive.ObjectID)
+	//v.ID = result.InsertedID.(primitive.ObjectID)
 	return v, err
 }
 
