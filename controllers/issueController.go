@@ -39,7 +39,8 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 	webpageId := vars["webpageId"]
 	issues, err := models.GetAllIssuesforWebpageId(webpageId)
 	if err != nil {
-
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
 	}
 	res, _ := json.Marshal(issues)
 	w.Header().Set("Content-Type", "pkglication/json")

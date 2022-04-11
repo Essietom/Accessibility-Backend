@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
@@ -73,13 +74,15 @@ func GetAllIssuesforWebpageId(id string) ([]entity.Issue, error) {
 	var issues []entity.Issue
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("the webpage id passed is invalid")
 	}
 	err = database.WebpageCollection.
 		FindOne(database.Ctx, bson.D{{"_id", objectId}}).
 		Decode(&wp)
-
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("no Issues were found for this webpage")
+		}
 		return nil, err
 	}
 	for _, element := range wp.Issue {
