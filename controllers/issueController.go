@@ -5,10 +5,11 @@ import (
 	"Accessibility-Backend/models"
 	"Accessibility-Backend/utilities"
 	"encoding/json"
+	"net/http"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
 )
 
 var Issue entity.Issue
@@ -50,33 +51,45 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 
 
 
-func UpdateIssue(w http.ResponseWriter, r *http.Request) {
-	var updateWebpage = &entity.Webpage{}
-	utilities.ParseBody(r, updateWebpage)
+
+func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
+	var updateIssue = &entity.Issue{}
+	utilities.ParseBody(r, updateIssue)
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
+	issueId := vars["issueId"]
 
-	webpageDetails, err := models.GetWebpageById(webpageId)
+	wpageId, err := primitive.ObjectIDFromHex(webpageId)
+	ishId, err := primitive.ObjectIDFromHex(issueId)
 	if err != nil {
-		println("tomiiiii", err)
+		utilities.ErrorResponse(422, err.Error(), w)
+		return
+	}
+
+	issueDetails, err := models.GetIssueByIssueIdAndWebpageId(ishId, wpageId)
+	if err != nil {
+		utilities.ErrorResponse(404, "no issue with the provided id", w)
 		return
 
 	}
 
-	if updateWebpage.Name != "" {
-		webpageDetails.Name = updateWebpage.Name
+	if updateIssue.Note != "" {
+		issueDetails.Note = updateIssue.Note
 	}
-	if updateWebpage.Note != "" {
-		webpageDetails.Note = updateWebpage.Note
+	if updateIssue.Impact != "" {
+		issueDetails.Impact = updateIssue.Impact
 	}
-	models.UpdateWebpage(webpageDetails, webpageId)
-	res, _ := json.Marshal(webpageDetails)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	if updateIssue.Finding != nil && updateIssue.Finding[0].Description != "" {
+		issueDetails.Finding[0].Description = updateIssue.Finding[0].Description
+	}
+	res, err := models.UpdateIssueByIssueIdAndWebpageId(issueDetails, wpageId, ishId)
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
+	}
+	utilities.SuccessRespond(res, w)
 
 }
-
 func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]

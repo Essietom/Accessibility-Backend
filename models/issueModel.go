@@ -73,20 +73,13 @@ func GetAllIssuesforWebpageId(id string) ([]entity.Issue, error) {
 
 	return issues, nil
 }
-func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Issue, error) {
+func GetIssueByIssueIdAndWebpageId(issueId primitive.ObjectID, webpageId primitive.ObjectID) (*entity.Issue, error) {
 	var issue entity.Issue
-	ishId, err := primitive.ObjectIDFromHex(issueId)
-	wpageId, err := primitive.ObjectIDFromHex(webpageId)
-	fmt.Println("issueId", ishId)
-	fmt.Println("webpageId", wpageId)
-	if err != nil {
-		return nil, err
-	}
 	cursor, err := database.WebpageCollection.
 		Aggregate(database.Ctx, bson.A{
 			bson.M{
 				"$match": bson.M{
-					"_id": wpageId,
+					"_id": webpageId,
 				},
 			},
 			bson.M{
@@ -94,7 +87,7 @@ func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Is
 			},
 			bson.M{
 				"$match": bson.M{
-					"issue._id": ishId,
+					"issue._id": issueId,
 				},
 			},
 			bson.M{
@@ -104,8 +97,12 @@ func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Is
 			},
 		},
 		)
-
-	fmt.Println("cursor", cursor)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("no Issues were found for this webpage")
+		}
+		return nil, err
+	}
 
 	for cursor.Next(database.Ctx) {
 		err := cursor.Decode(&issue)
@@ -118,6 +115,7 @@ func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Is
 	fmt.Println("no error ish", &issue)
 	return &issue, nil
 }
+
 
 //update website websiteid, pull issue where webpage id = webpage and issue id = issueid
 func DeleteIssueByIssueIdAndWebpageId(webpageId primitive.ObjectID, issueId primitive.ObjectID) (string, error) {
@@ -143,35 +141,35 @@ func DeleteIssueByIssueIdAndWebpageId(webpageId primitive.ObjectID, issueId prim
 	return "Issue was successfully deleted", nil
 }
 
-//db.users.update({_id:123}, {$set:{
-//"friends.$[updateFriend].emails.$[updateEmail].email : "lucy.is.gucy@zmail.com"
-//}}, {
-//"arrayFilters": [
-//{"updateFriend.name" : "lucy"},
-//{"updateEmail.email" : "lucyGucy@zmail.com"}
-//]
-//})
-//db.users.update ({_id: '123'}, { '$set': {"friends.0.emails.0.email" : '2222'} });
 //updates an issue under a website and the findings under that issue
-func UpdateIssue(v *entity.Webpage, id string) (*entity.Webpage, error) {
+//todo not working
+func UpdateIssueByIssueIdAndWebpageId(v *entity.Issue, webpageId primitive.ObjectID, issueId primitive.ObjectID) (*entity.Issue, error) {
 
-	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": id},
+	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
 		bson.M{
-			"$set": &v,
+			"$set": bson.M{
+				"issue.$": &v,
+				"arrayFilters": bson.A{
+					bson.M{
+						"issue._id": issueId,
+					},
+				},
+			},
+			
 		},
 	)
+
+
 	if err != nil {
-		return nil, err
+		fmt.Println("what", err)
+		return nil, errors.New("some error occurred while updating issue")
 	}
 	if result.MatchedCount == 0 {
-		return nil, err
+		return nil, errors.New("webpage not found")
 	}
 	if result.ModifiedCount == 0 {
-		return nil, err
+		return nil, errors.New("issue could not be updated")
 	}
-	v, err = GetWebpageById(id)
-	if err != nil {
-		return nil, err
-	}
+
 	return v, err
 }
