@@ -48,29 +48,7 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func GetIssues(w http.ResponseWriter, r *http.Request) {
-	webpageScan, err := models.GetAllWebpages()
-	if err != nil {
 
-	}
-	res, _ := json.Marshal(webpageScan)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
-}
-
-//func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
-//	vars := mux.Vars(r)
-//	webpageId := vars["webpageId"]
-//	webpageDetails, err := models.GetWebpageById(webpageId)
-//	if err != nil {
-//
-//	}
-//	res, _ := json.Marshal(webpageDetails)
-//	w.Header().Set("Content-Type", "pkglication/json")
-//	w.WriteHeader(http.StatusOK)
-//	w.Write(res)
-//}
 
 func UpdateIssue(w http.ResponseWriter, r *http.Request) {
 	var updateWebpage = &entity.Webpage{}
@@ -99,7 +77,7 @@ func UpdateIssue(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func DeleteIssueByWebpageAndWebpageId(w http.ResponseWriter, r *http.Request) {
+func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	issueId := vars["issueId"]
@@ -109,7 +87,7 @@ func DeleteIssueByWebpageAndWebpageId(w http.ResponseWriter, r *http.Request) {
 		utilities.ErrorResponse(422, err.Error(), w)
 		return
 	}
-	vin, error := models.DeleteIssueByWebpageAndWebpageId(wpageId, ishId)
+	vin, error := models.DeleteIssueByIssueIdAndWebpageId(wpageId, ishId)
 	if error != nil {
 		utilities.ErrorResponse(500, error.Error(), w)
 		return

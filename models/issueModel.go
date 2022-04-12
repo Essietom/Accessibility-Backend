@@ -49,25 +49,7 @@ func AddIssue(issue *entity.Issue, websiteId string) (*entity.Issue, error) {
 
 }
 
-//return all the issues for a webpage
-func GetAllIssues() ([]entity.Webpage, error) {
-	var webpage entity.Webpage
-	var webpages []entity.Webpage
-	cursor, err := database.WebpageCollection.Find(database.Ctx, bson.D{})
-	if err != nil {
-		defer cursor.Close(database.Ctx)
-		return webpages, err
-	}
 
-	for cursor.Next(database.Ctx) {
-		err := cursor.Decode(&webpage)
-		if err != nil {
-			return webpages, err
-		}
-		webpages = append(webpages, webpage)
-	}
-	return webpages, nil
-}
 
 func GetAllIssuesforWebpageId(id string) ([]entity.Issue, error) {
 	var wp entity.Webpage
@@ -138,7 +120,7 @@ func GetIssueByIssueIdAndWebpageId(issueId string, webpageId string) (*entity.Is
 }
 
 //update website websiteid, pull issue where webpage id = webpage and issue id = issueid
-func DeleteIssueByWebpageAndWebpageId(webpageId primitive.ObjectID, issueId primitive.ObjectID) (string, error) {
+func DeleteIssueByIssueIdAndWebpageId(webpageId primitive.ObjectID, issueId primitive.ObjectID) (string, error) {
 	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
 		bson.M{
 			"$pull": bson.M{

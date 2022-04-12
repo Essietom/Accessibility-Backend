@@ -3,8 +3,9 @@ package routes
 import (
 	"Accessibility-Backend/controllers"
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func RegisterRoutes(router *mux.Router) {
@@ -28,9 +29,8 @@ func RegisterRoutes(router *mux.Router) {
 
 	router.HandleFunc("/issue/{webpageId}", controllers.AddIssue).Methods("POST")
 	router.HandleFunc("/issue/{webpageId}", controllers.GetAllIssuesforWebpageId).Methods("GET")
-	router.HandleFunc("/issue/", controllers.GetIssues).Methods("GET")
 	router.HandleFunc("/issue/{issueId}", controllers.UpdateWebpageScan).Methods("PUT")
-	router.HandleFunc("/issue/{webpageId}/{issueId}", controllers.DeleteIssueByWebpageAndWebpageId).Methods("DELETE")
+	router.HandleFunc("/issue/{webpageId}/{issueId}", controllers.DeleteIssueByIssueIdAndWebpageId).Methods("DELETE")
 
 	router.HandleFunc("/website/", controllers.CreateWebsite).Methods("POST")
 	router.HandleFunc("/website/", controllers.GetAllWebsites).Methods("GET")
