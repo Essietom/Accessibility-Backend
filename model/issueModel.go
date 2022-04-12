@@ -36,7 +36,7 @@ func AddIssue(data dto.IssueRequestBody, websiteId string) (*entity.Issue, error
 	isss.Timestamp = time.Now().Format("2006-01-02 15:04:05")
 	isss.ID = primitive.NewObjectID()
 
-	result, err := repository.Save(&isss, objectId)
+	result, err := repository.SaveIssue(&isss, objectId)
 	if err != nil {
 		return nil, errors.New("some error occurred while entering issue")
 	}
@@ -102,7 +102,7 @@ func DeleteIssue(webpageId string, issueId string) error {
 	ishId, _ := primitive.ObjectIDFromHex(issueId)	
 	wpId, _ := primitive.ObjectIDFromHex(webpageId)
 
-	result, err := repository.Delete(wpId, ishId)
+	result, err := repository.DeleteIssue(wpId, ishId)
 	if err != nil {
 		return errors.New("some error occurred")
 	}

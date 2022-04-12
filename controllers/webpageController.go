@@ -2,12 +2,13 @@ package controllers
 
 import (
 	"Accessibility-Backend/entity"
+	"Accessibility-Backend/model"
 	"Accessibility-Backend/models"
 	"Accessibility-Backend/utilities"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 var Webpage entity.Webpage
@@ -19,7 +20,7 @@ func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 		utilities.ValidationResponse(errors, w)
 		return
 	}
-	v, err := models.SaveWebpageScan(vi)
+	v, err := model.SaveWebpageScan(vi)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return
@@ -29,7 +30,7 @@ func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
-	webpageScan, err := models.GetAllWebpages()
+	webpageScan, err := model.GetAllWebpages()
 	if err != nil {
 
 	}
@@ -42,7 +43,7 @@ func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
 func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageField := vars["webpageField"]
-	webpageDetails, err := models.GetWebpageByField(webpageField)
+	webpageDetails, err := model.GetWebpageByField(webpageField)
 	if err != nil {
 
 	}
@@ -55,7 +56,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	webpageDetails, err := models.GetWebpageById(utilities.StringToPrimitive(webpageId))
+	webpageDetails, err := model.GetWebpageById(webpageId)
 	if err != nil {
 
 	}
@@ -71,7 +72,7 @@ func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 
-	webpageDetails, err := models.GetWebpageById(utilities.StringToPrimitive(webpageId))
+	webpageDetails, err := model.GetWebpageById(webpageId)
 	if err != nil {
 		println("tomiiiii", err)
 		return
@@ -95,8 +96,7 @@ func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
 func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	primitiveId, _ := primitive.ObjectIDFromHex(webpageId)
-	vin := models.DeleteWebpage(primitiveId)
+	vin := model.DeleteWebpage(webpageId)
 	res, _ := json.Marshal(vin)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)

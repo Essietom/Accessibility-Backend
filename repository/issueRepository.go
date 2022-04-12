@@ -43,7 +43,7 @@ func FindByIssueIdAndWebpageId(issueId primitive.ObjectID, webpageId primitive.O
 		)
 }
 
-func Save(issue *entity.Issue, websiteId primitive.ObjectID) (*mongo.UpdateResult, error) {
+func SaveIssue(issue *entity.Issue, websiteId primitive.ObjectID) (*mongo.UpdateResult, error) {
 	return database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": websiteId},
 		bson.M{
 			"$push": bson.M{
@@ -53,7 +53,7 @@ func Save(issue *entity.Issue, websiteId primitive.ObjectID) (*mongo.UpdateResul
 	)
 }
 
-func Delete(webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mongo.UpdateResult, error) {
+func DeleteIssue(webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mongo.UpdateResult, error) {
 
 	return database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
 		bson.M{
