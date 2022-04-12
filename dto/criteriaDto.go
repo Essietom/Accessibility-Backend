@@ -1,4 +1,4 @@
-package entity
+package dto
 
 type Criteria struct {
 	ID   string `json:"criteriaId" bson:"_id,omitempty"`

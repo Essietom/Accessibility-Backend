@@ -15,11 +15,17 @@ var Webpage entity.Webpage
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 	vi := &entity.Webpage{}
 	utilities.ParseBody(r, vi)
-	v, _ := models.SaveWebpageScan(vi)
-	res, _ := json.Marshal(v)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	if ok, errors := utilities.ValidateInputs(vi); !ok {
+		utilities.ValidationResponse(errors, w)
+		return
+	}
+	v, err := models.SaveWebpageScan(vi)
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
+	}
+	utilities.SuccessRespond(v, w)
+
 }
 
 func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +55,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	webpageDetails, err := models.GetWebpageById(webpageId)
+	webpageDetails, err := models.GetWebpageById(utilities.StringToPrimitive(webpageId))
 	if err != nil {
 
 	}
@@ -65,7 +71,7 @@ func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 
-	webpageDetails, err := models.GetWebpageById(webpageId)
+	webpageDetails, err := models.GetWebpageById(utilities.StringToPrimitive(webpageId))
 	if err != nil {
 		println("tomiiiii", err)
 		return

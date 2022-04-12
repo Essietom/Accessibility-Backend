@@ -1,23 +1,23 @@
 package controllers
 
 import (
+	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/models"
+	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var Issue entity.Issue
 
-var validate *validator.Validate
 
 func AddIssue(w http.ResponseWriter, r *http.Request) {
-	var ish = &entity.Issue{}
+	var ish = &dto.IssueRequestBody{}
 	utilities.ParseBodyTest(r, ish, w)
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
@@ -26,7 +26,7 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 		utilities.ValidationResponse(errors, w)
 		return
 	}
-	v, err := models.AddIssue(ish, webpageId)
+	v, err := model.AddIssue(*ish, webpageId)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return
@@ -38,7 +38,7 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	issues, err := models.GetAllIssuesforWebpageId(webpageId)
+	 issues, err := model.GetIssuesByWebpageId(webpageId)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return
@@ -59,7 +59,7 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	webpageId := vars["webpageId"]
 	issueId := vars["issueId"]
 
-	wpageId, err := primitive.ObjectIDFromHex(webpageId)
+	wpageId, _ := primitive.ObjectIDFromHex(webpageId)
 	ishId, err := primitive.ObjectIDFromHex(issueId)
 	if err != nil {
 		utilities.ErrorResponse(422, err.Error(), w)
@@ -94,18 +94,14 @@ func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	issueId := vars["issueId"]
-	wpageId, err := primitive.ObjectIDFromHex(webpageId)
-	ishId, err := primitive.ObjectIDFromHex(issueId)
-	if err != nil {
-		utilities.ErrorResponse(422, err.Error(), w)
-		return
-	}
-	vin, error := models.DeleteIssueByIssueIdAndWebpageId(wpageId, ishId)
+	
+	error := model.DeleteIssue(webpageId, issueId)
+
 	if error != nil {
 		utilities.ErrorResponse(500, error.Error(), w)
 		return
 	}
-	res, _ := json.Marshal(vin)
+	res, _ := json.Marshal("successfully deleted")
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(res)

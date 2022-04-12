@@ -2,11 +2,13 @@ package utilities
 
 import (
 	"encoding/json"
-	"github.com/go-playground/validator/v10"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var validate *validator.Validate
@@ -77,4 +79,13 @@ func ValidateInputs(dataSet interface{}) (bool, map[string][]string) {
 		return false, errors
 	}
 	return true, nil
+}
+
+
+func StringToPrimitive(id string) (primitive.ObjectID){
+	primId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		 
+	}
+	return primId
 }

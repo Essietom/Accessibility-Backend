@@ -3,15 +3,29 @@ package models
 import (
 	"Accessibility-Backend/database"
 	"Accessibility-Backend/entity"
+	"Accessibility-Backend/utilities"
 	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func SaveWebpageScan(wp *entity.Webpage) (*entity.Webpage, error) {
+
 	if wp.Issue == nil {
 		wp.Issue = make([]entity.Issue, 0) // this is alloc free
+	}else {
+		for _, s:= range wp.Issue{
+			s.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+			s.ID = primitive.NewObjectID()
+			fmt.Println("issue here", s)
+
+		}
 	}
+	fmt.Println("out here", wp.Issue)
+
+
 
 	result, err := database.WebpageCollection.InsertOne(database.Ctx, wp)
 	if err != nil {
@@ -32,8 +46,8 @@ func SaveWebpageScan(wp *entity.Webpage) (*entity.Webpage, error) {
 		fmt.Println("website already exist", err)
 
 	}
+	return GetWebpageById(result.InsertedID.(primitive.ObjectID))
 
-	return wp, err
 }
 
 func GetAllWebpages() ([]entity.Webpage, error) {
@@ -55,14 +69,11 @@ func GetAllWebpages() ([]entity.Webpage, error) {
 	return webpages, nil
 }
 
-func GetWebpageById(id string) (*entity.Webpage, error) {
+func GetWebpageById(id primitive.ObjectID) (*entity.Webpage, error) {
 	var wp entity.Webpage
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-	err = database.WebpageCollection.
-		FindOne(database.Ctx, bson.D{{"_id", objectId}}).
+	
+	err := database.WebpageCollection.
+		FindOne(database.Ctx, bson.D{{"_id", id}}).
 		Decode(&wp)
 	if err != nil {
 		return nil, err
@@ -132,7 +143,7 @@ func UpdateWebpage(v *entity.Webpage, id string) (*entity.Webpage, error) {
 	if result.ModifiedCount == 0 {
 		return nil, err
 	}
-	v, err = GetWebpageById(id)
+	v, err = GetWebpageById(utilities.StringToPrimitive(id))
 	if err != nil {
 		return nil, err
 	}
