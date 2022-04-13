@@ -6,7 +6,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"errors"
-	"time"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -16,27 +15,17 @@ import (
 func AddIssue(data dto.IssueRequestBody, websiteId string) (*entity.Issue, error) {
 
 	if data.Criteria == nil {
-		data.Criteria = make([]entity.Criteria, 0) // this is alloc free
+		data.Criteria = make([]dto.CriteriaRequestBody, 0) // this is alloc free
 	}
 	if data.Finding == nil {
-		data.Finding = make([]entity.Finding, 0) // this is alloc free
-	} else {
-		data.Finding[0].ID = primitive.NewObjectID()
-	}
-
-	isss := entity.Issue{
-		Impact:        data.Impact,
-		Found:       data.Found,
-		Note: data.Note,
-		Criteria:    data.Criteria,
-	}
+		data.Finding = make([]dto.FindingRequestBody, 0) // this is alloc free
+	} 
+	
+	isss := data.ToIssueEntities()
 
 	objectId, _ := primitive.ObjectIDFromHex(websiteId)
 
-	isss.Timestamp = time.Now().Format("2006-01-02 15:04:05")
-	isss.ID = primitive.NewObjectID()
-
-	result, err := repository.SaveIssue(&isss, objectId)
+	result, err := repository.SaveIssue(isss, objectId)
 	if err != nil {
 		return nil, errors.New("some error occurred while entering issue")
 	}
@@ -47,7 +36,7 @@ func AddIssue(data dto.IssueRequestBody, websiteId string) (*entity.Issue, error
 		return nil, errors.New("issue could not be updated")
 	}
 
-	return &isss, err
+	return isss, err
 
 }
 

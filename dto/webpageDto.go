@@ -1,13 +1,41 @@
 package dto
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"Accessibility-Backend/entity"
 
-type Webpage struct {
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+
+
+type WebpageRequestBody struct {
+	Name     string             `json:"name" validate:"required"`
+	Url      string             `json:"url" validate:"required"`
+	ScanTime string             `json:"scanTime" validate:"required"`
+	Note     string             `json:"note"`
+	Issue    []IssueRequestBody `json:"issue" validate:"required"`
+	Website  WebsiteRequestBody            `json:"website" validate:"required"`
+}
+
+
+type WebpageResponse struct {
 	ID       primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name     string             `json:"name" validate:"required"`
 	Url      string             `json:"url" validate:"required"`
 	ScanTime string             `json:"scanTime" validate:"required"`
 	Note     string             `json:"note"`
 	// Issue    []Issue            `json:"issue" validate:"required"`
-	Website  Website            `json:"website" validate:"required"`
+	Website  WebsiteRequestBody           `json:"website" validate:"required"`
+}
+
+func (data WebpageRequestBody) ToWebpageEntities() *entity.Webpage {
+	return &entity.Webpage{
+		ID: primitive.NewObjectID(),
+		Name:        data.Name,
+		Url:       data.Url,
+		ScanTime: data.ScanTime,
+		Note: data.Note,
+		Issue:    *GetIssueEntities(data.Issue),
+		Website:    *data.Website.ToWebsiteEntities(),
+	}
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/models"
@@ -14,7 +15,7 @@ import (
 var Webpage entity.Webpage
 
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
-	vi := &entity.Webpage{}
+	vi := &dto.WebpageRequestBody{}
 	utilities.ParseBody(r, vi)
 	if ok, errors := utilities.ValidateInputs(vi); !ok {
 		utilities.ValidationResponse(errors, w)

@@ -1,9 +1,20 @@
 package dto
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"Accessibility-Backend/entity"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
-type Website struct {
-	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+type WebsiteRequestBody struct {
 	Name string             `json:"name" validate:"required"`
 	Url  string             `json:"url" validate:"required"`
+}
+
+func (data WebsiteRequestBody) ToWebsiteEntities() *entity.Website {
+	return &entity.Website{
+		ID: primitive.NewObjectID(),
+		Name:       data.Name,
+		Url:       data.Url,
+		
+	}
 }

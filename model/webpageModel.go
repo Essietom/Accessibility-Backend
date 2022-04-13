@@ -2,39 +2,43 @@ package model
 
 import (
 	"Accessibility-Backend/database"
+	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"fmt"
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 
-func SaveWebpageScan(wp *entity.Webpage) (*entity.Webpage, error) {
+func SaveWebpageScan(data *dto.WebpageRequestBody) (*entity.Webpage, error) {
 
-	if wp.Issue == nil {
-		wp.Issue = make([]entity.Issue, 0) // this is alloc free
-	}else {
-		for _, s:= range wp.Issue{
-			s.Timestamp = time.Now().Format("2006-01-02 15:04:05")
-			s.ID = primitive.NewObjectID()
 
-		}
+
+	if data.Issue == nil {
+		data.Issue = make([]dto.IssueRequestBody, 0) // this is alloc free
 	}
+	
+	// else {
+	// 	for _, s:= range wp.Issue{
+	// 		s.Timestamp = time.Now().Format("2006-01-02 15:04:05")
+	// 		s.ID = primitive.NewObjectID()
+
+	// 	}
+	// }
+	wpage := data.ToWebpageEntities()
 
 
 
-	result, err := repository.SaveWebpage(wp)
+	result, err := repository.SaveWebpage(wpage)
 	if err != nil {
 		return nil, err
 	}
-	wp.ID = result.InsertedID.(primitive.ObjectID)
-	if wp.Website.ID == primitive.NilObjectID {
-		web, err := GetWebpageByField(wp.Website.Url)
+	wpage.ID = result.InsertedID.(primitive.ObjectID)
+	if wpage.Website.ID == primitive.NilObjectID {
+		web, err := GetWebpageByField(wpage.Website.Url)
 		if web == nil {
-			_, err := database.WebsiteCollection.InsertOne(database.Ctx, wp.Website)
+			_, err := database.WebsiteCollection.InsertOne(database.Ctx, wpage.Website)
 			if err != nil {
 				fmt.Println("unable to insert website", err)
 			}
@@ -43,7 +47,7 @@ func SaveWebpageScan(wp *entity.Webpage) (*entity.Webpage, error) {
 		fmt.Println("website already exist", err)
 
 	}
-	return wp,nil
+	return wpage,nil
 
 }
 

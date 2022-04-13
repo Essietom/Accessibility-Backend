@@ -1,11 +1,12 @@
 package dto
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"Accessibility-Backend/entity"
 
-type Finding struct {
-	//ID string `json:"id" bson:"_id,omitempty"`
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
-	ID          primitive.ObjectID `json:"findingId" bson:"_id,omitempty"`
+type FindingRequestBody struct {
 	Description string             `json:"description" validate:"required"`
 	Location    string             `json:"location"`
 	Source      string             `json:"source"`
@@ -13,3 +14,21 @@ type Finding struct {
 	Note        string             `json:"note"`
 }
 
+func (data FindingRequestBody) ToFindingEntities() *entity.Finding {
+	return &entity.Finding{
+		ID: primitive.NewObjectID(),
+		Description:       data.Description,
+		Location:       data.Location,
+		Source:       data.Source,
+		Fix:       data.Fix,
+		Note: data.Note,
+	}
+}
+
+func  GetFindingEntities(findings []FindingRequestBody) *[]entity.Finding{
+	var findingEntities []entity.Finding
+	for _, findi := range findings {	
+		findingEntities = append(findingEntities, *findi.ToFindingEntities())
+	}
+	return &findingEntities
+}
