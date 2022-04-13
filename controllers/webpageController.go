@@ -14,13 +14,13 @@ import (
 var Webpage entity.Webpage
 
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
-	vi := &dto.WebpageRequestBody{}
-	utilities.ParseBody(r, vi)
-	if ok, errors := utilities.ValidateInputs(vi); !ok {
+	webpageRequest := &dto.WebpageRequestBody{}
+	utilities.ParseBody(r, webpageRequest)
+	if ok, errors := utilities.ValidateInputs(webpageRequest); !ok {
 		utilities.ValidationResponse(errors, w)
 		return
 	}
-	v, err := model.SaveWebpageScan(vi)
+	v, err := model.SaveWebpageScan(webpageRequest)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return
@@ -32,12 +32,10 @@ func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
 	webpageScan, err := model.GetAllWebpages()
 	if err != nil {
-
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
 	}
-	res, _ := json.Marshal(webpageScan)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(webpageScan, w)
 }
 
 func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
@@ -45,12 +43,10 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	webpageField := vars["webpageField"]
 	webpageDetails, err := model.GetWebpageByField(webpageField)
 	if err != nil {
-
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
 	}
-	res, _ := json.Marshal(webpageDetails)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(webpageDetails, w)
 }
 
 func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
@@ -58,12 +54,10 @@ func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 	webpageId := vars["webpageId"]
 	webpageDetails, err := model.GetWebpageById(webpageId)
 	if err != nil {
-
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
 	}
-	res, _ := json.Marshal(webpageDetails)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(webpageDetails, w)
 }
 
 func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
@@ -96,10 +90,11 @@ func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
 func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	vin := model.DeleteWebpage(webpageId)
-	res, _ := json.Marshal(vin)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	err := model.DeleteWebpage(webpageId)
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
+	}
+	utilities.SuccessRespond("sucessfully deleted", w)
 
 }

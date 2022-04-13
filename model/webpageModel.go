@@ -13,41 +13,35 @@ import (
 
 func SaveWebpageScan(data *dto.WebpageRequestBody) (*entity.Webpage, error) {
 
-
-
 	if data.Issue == nil {
 		data.Issue = make([]dto.IssueRequestBody, 0) // this is alloc free
 	}
 	
-	// else {
-	// 	for _, s:= range wp.Issue{
-	// 		s.Timestamp = time.Now().Format("2006-01-02 15:04:05")
-	// 		s.ID = primitive.NewObjectID()
+	webpageEntity := data.ToWebpageEntities()
 
-	// 	}
-	// }
-	wpage := data.ToWebpageEntities()
+	website, err := GetWebsiteByField(webpageEntity.Website.Name)
+	var ws *entity.Website
+
+	if website == nil {
+		ws, err = CreateWebsite(&data.Website)
+		if err != nil {
+			fmt.Println("unable to insert website", err)
+		}else{
+		fmt.Println("created a new website", err)
+		webpageEntity.Website = *ws
+		}
+	}else{
+	fmt.Println("website already exist", err)
+	webpageEntity.Website = *website
+	}
 
 
-
-	result, err := repository.SaveWebpage(wpage)
+	_, err = repository.SaveWebpage(webpageEntity)
 	if err != nil {
 		return nil, err
 	}
-	wpage.ID = result.InsertedID.(primitive.ObjectID)
-	if wpage.Website.ID == primitive.NilObjectID {
-		web, err := GetWebpageByField(wpage.Website.Url)
-		if web == nil {
-			_, err := database.WebsiteCollection.InsertOne(database.Ctx, wpage.Website)
-			if err != nil {
-				fmt.Println("unable to insert website", err)
-			}
-			fmt.Println("created a new website", err)
-		}
-		fmt.Println("website already exist", err)
 
-	}
-	return wpage,nil
+	return webpageEntity,nil
 
 }
 
