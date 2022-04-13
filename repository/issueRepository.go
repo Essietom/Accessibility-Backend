@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
@@ -64,6 +65,23 @@ func DeleteIssue(webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mon
 			},
 		},
 	)
+
+	
+}
+
+func UpdateIssue(issueBody *entity.Issue, webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mongo.SingleResult) {
+
+	return database.WebpageCollection.FindOneAndUpdate(database.Ctx, bson.M{"_id": webpageId},
+			bson.M{
+				"$set": bson.M{
+					"issue.$[elem]": &issueBody,
+				},
+			},
+			options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+				Filters: []interface{}{bson.M{"elem._id": issueId}},
+			}).SetReturnDocument(1),
+			
+		)
 
 	
 }

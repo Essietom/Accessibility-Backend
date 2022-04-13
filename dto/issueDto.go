@@ -16,15 +16,11 @@ type IssueRequestBody struct {
 }
 
 
-// type IssueResponseBody struct {
-// 	ID        string `json:"issueId"`
-// 	Criteria  []Criteria         `json:"criteria"`
-// 	Finding   []Finding          `json:"finding"`
-// 	Impact    string             `json:"impact"`
-// 	Timestamp string             `json:"timestamp"`
-// 	Found     string             `json:"found"`
-// 	Note      string             `json:"note"`
-// }
+type IssueUpdateBody struct {
+	Finding   []FindingRequestBody         `json:"finding"`
+	Impact    string             `json:"impact"`
+	Note      string             `json:"note"`
+}
 
 
 func (data IssueRequestBody) ToIssueEntities() *entity.Issue {

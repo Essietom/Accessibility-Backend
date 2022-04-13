@@ -7,6 +7,7 @@ import (
 	"Accessibility-Backend/utilities"
 	"encoding/json"
 	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -50,7 +51,7 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 
 
 func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
-	var updateIssue = &entity.Issue{}
+	var updateIssue = &dto.IssueUpdateBody{}
 	utilities.ParseBody(r, updateIssue)
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
@@ -64,6 +65,7 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+
 	if updateIssue.Note != "" {
 		issueDetails.Note = updateIssue.Note
 	}
@@ -73,8 +75,8 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	if updateIssue.Finding != nil && updateIssue.Finding[0].Description != "" {
 		issueDetails.Finding[0].Description = updateIssue.Finding[0].Description
 	}
-	// res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, wpageId, ishId)
-	res, err := "nil",nil
+
+	 res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, webpageId, issueId)
 
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)

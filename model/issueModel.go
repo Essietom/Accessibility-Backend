@@ -10,7 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-
 //update website, add issue to issue object
 func AddIssue(data dto.IssueRequestBody, websiteId string) (*entity.Issue, error) {
 
@@ -107,33 +106,18 @@ func DeleteIssue(webpageId string, issueId string) error {
 
 //updates an issue under a website and the findings under that issue
 //todo not working
-// func UpdateIssueByIssueIdAndWebpageId(v *entity.Issue, webpageId primitive.ObjectID, issueId primitive.ObjectID) (*entity.Issue, error) {
+func UpdateIssueByIssueIdAndWebpageId(issueUpdateBody *entity.Issue, webpageId string, issueId string) (*entity.Issue, error) {
 
-// 	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId},
-// 		bson.M{
-// 			"$set": bson.M{
-// 				"issue.$": &v,
-// 				"arrayFilters": bson.A{
-// 					bson.M{
-// 						"issue._id": issueId,
-// 					},
-// 				},
-// 			},
-			
-// 		},
-// 	)
+	var issue entity.Issue
+	ishId, _ := primitive.ObjectIDFromHex(issueId)	
+	wpId, _ := primitive.ObjectIDFromHex(webpageId)
+
+	err := repository.UpdateIssue(issueUpdateBody, wpId, ishId).Decode(&issue)
 
 
-// 	if err != nil {
-// 		fmt.Println("what", err)
-// 		return nil, errors.New("some error occurred while updating issue")
-// 	}
-// 	if result.MatchedCount == 0 {
-// 		return nil, errors.New("webpage not found")
-// 	}
-// 	if result.ModifiedCount == 0 {
-// 		return nil, errors.New("issue could not be updated")
-// 	}
+	if err != nil {
+		return nil, err
 
-// 	return v, err
-// }
+	}
+	return issueUpdateBody, nil
+}
