@@ -6,7 +6,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -104,25 +103,25 @@ func DeleteWebpage(id string) error {
 	return err
 }
 
-func UpdateWebpage(v *entity.Webpage, id string) (*entity.Webpage, error) {
+// func UpdateWebpage(v *entity.Webpage, id string) (*entity.Webpage, error) {
 
-	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": id},
-		bson.M{
-			"$set": &v,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	if result.MatchedCount == 0 {
-		return nil, err
-	}
-	if result.ModifiedCount == 0 {
-		return nil, err
-	}
-	v, err = GetWebpageById(id)
-	if err != nil {
-		return nil, err
-	}
-	return v, err
-}
+// 	result, err := database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": id},
+// 		bson.M{
+// 			"$set": &v,
+// 		},
+// 	)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if result.MatchedCount == 0 {
+// 		return nil, err
+// 	}
+// 	if result.ModifiedCount == 0 {
+// 		return nil, err
+// 	}
+// 	v, err = GetWebpageById(id)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return v, err
+// }

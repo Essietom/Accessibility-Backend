@@ -5,7 +5,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
-	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -60,32 +59,32 @@ func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 	utilities.SuccessRespond(webpageDetails, w)
 }
 
-func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
-	var updateWebpage = &entity.Webpage{}
-	utilities.ParseBody(r, updateWebpage)
-	vars := mux.Vars(r)
-	webpageId := vars["webpageId"]
+// func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
+// 	var updateWebpage = &entity.Webpage{}
+// 	utilities.ParseBody(r, updateWebpage)
+// 	vars := mux.Vars(r)
+// 	webpageId := vars["webpageId"]
 
-	webpageDetails, err := model.GetWebpageById(webpageId)
-	if err != nil {
-		println("tomiiiii", err)
-		return
+// 	webpageDetails, err := model.GetWebpageById(webpageId)
+// 	if err != nil {
+// 		println("tomiiiii", err)
+// 		return
 
-	}
+// 	}
 
-	if updateWebpage.Name != "" {
-		webpageDetails.Name = updateWebpage.Name
-	}
-	if updateWebpage.Note != "" {
-		webpageDetails.Note = updateWebpage.Note
-	}
-	model.UpdateWebpage(webpageDetails, webpageId)
-	res, _ := json.Marshal(webpageDetails)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+// 	if updateWebpage.Name != "" {
+// 		webpageDetails.Name = updateWebpage.Name
+// 	}
+// 	if updateWebpage.Note != "" {
+// 		webpageDetails.Note = updateWebpage.Note
+// 	}
+// 	model.UpdateWebpage(webpageDetails, webpageId)
+// 	res, _ := json.Marshal(webpageDetails)
+// 	w.Header().Set("Content-Type", "pkglication/json")
+// 	w.WriteHeader(http.StatusOK)
+// 	w.Write(res)
 
-}
+// }
 
 func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

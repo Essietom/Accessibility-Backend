@@ -34,16 +34,16 @@ func DeleteWebpage(id primitive.ObjectID) error {
 	
 }
 
-func UpdateWebpage(v *entity.Webpage, id primitive.ObjectID) (*mongo.UpdateResult, error) {
+// func UpdateWebpage(v *entity.Webpage, id primitive.ObjectID) (*mongo.UpdateResult, error) {
 
-	return database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": id},
-	bson.M{
-		"$set": &v,
-	},
-)
+// 	return database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": id},
+// 	bson.M{
+// 		"$set": &v,
+// 	},
+// )
 
 	
-}
+// }
 
 func GetWebpageByField(field string) (*mongo.Cursor, error){
 	return database.WebpageCollection.
