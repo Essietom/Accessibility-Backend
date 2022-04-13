@@ -2,20 +2,24 @@ package model
 
 import (
 	"Accessibility-Backend/database"
+	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateWebsite(v *entity.Website) (*entity.Website, error) {
-	result, err := repository.SaveWebsite(v)
+func CreateWebsite(websiteRequest *dto.WebsiteRequestBody) (*entity.Website, error) {
+
+	websiteEntity := websiteRequest.ToWebsiteEntities()
+	
+	_, err := repository.SaveWebsite(websiteEntity)
 	if err != nil {
 		fmt.Println("unable to insert record", err)
 		return nil, err
 	}
-	v.ID = result.InsertedID.(primitive.ObjectID)
-	return v, err
+	return websiteEntity, err
 }
 
 func GetAllWebsites() ([]entity.Website, error) {
@@ -38,10 +42,8 @@ func GetAllWebsites() ([]entity.Website, error) {
 }
 
 func GetWebsiteById(id string) (*entity.Website, error) {
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
+	objectId, _ := primitive.ObjectIDFromHex(id)
+
 	ws, err := repository.FindWebsiteById(objectId)
 	if err != nil {
 		return nil, err
@@ -58,10 +60,10 @@ func GetWebsiteByField(field string) (*entity.Website, error) {
 	return &ws, nil
 }
 
-func UpdateWebsite(v *entity.Website, id string) (*entity.Website, error) {
+func UpdateWebsite(website *entity.Website, id string) (*entity.Website, error) {
 
 	objectId, _ := primitive.ObjectIDFromHex(id)
-	result, err := repository.UpdateWebsite(v, objectId)
+	result, err := repository.UpdateWebsite(website, objectId)
 	if err != nil {
 		return nil, err
 	}
@@ -71,9 +73,9 @@ func UpdateWebsite(v *entity.Website, id string) (*entity.Website, error) {
 	if result.ModifiedCount == 0 {
 		return nil, err
 	}
-	v, err = GetWebsiteById(id)
+	website, err = GetWebsiteById(id)
 	if err != nil {
 		return nil, err
 	}
-	return v, err
+	return website, err
 }

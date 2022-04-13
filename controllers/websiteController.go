@@ -1,35 +1,36 @@
 package controllers
 
 import (
+	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
-	"encoding/json"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 var NewWebsite entity.Website
 
 func CreateWebsite(w http.ResponseWriter, r *http.Request) {
-	vi := &entity.Website{}
-	utilities.ParseBody(r, vi)
-	v, _ := model.CreateWebsite(vi)
-	res, _ := json.Marshal(v)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	websiteRequest := &dto.WebsiteRequestBody{}
+	utilities.ParseBody(r, websiteRequest)
+	website, err := model.CreateWebsite(websiteRequest)
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
+	}
+	utilities.SuccessRespond(website, w)
 }
 
 func GetAllWebsites(w http.ResponseWriter, r *http.Request) {
-	criteria, err := model.GetAllWebsites()
-	if err != nil {
+	websites, err := model.GetAllWebsites()
 
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
 	}
-	res, _ := json.Marshal(criteria)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(websites, w)
 }
 
 func GetWebsiteById(w http.ResponseWriter, r *http.Request) {
@@ -37,12 +38,10 @@ func GetWebsiteById(w http.ResponseWriter, r *http.Request) {
 	websiteId := vars["websiteId"]
 	websiteDetails, err := model.GetWebsiteById(websiteId)
 	if err != nil {
-
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
 	}
-	res, _ := json.Marshal(websiteDetails)
-	w.Header().Set("Content-Type", "pkglicatio/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(websiteDetails, w)
 }
 
 func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
@@ -53,9 +52,8 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 
 	websiteDetails, err := model.GetWebsiteById(websiteId)
 	if err != nil {
-		println("tomiiiii", err)
+		utilities.ErrorResponse(500, err.Error(), w)
 		return
-
 	}
 
 	if updateWebsite.Name != "" {
@@ -65,9 +63,10 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 		websiteDetails.Url = updateWebsite.Url
 	}
 	model.UpdateWebsite(websiteDetails, websiteId)
-	res, _ := json.Marshal(websiteDetails)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	if err != nil {
+		utilities.ErrorResponse(500, err.Error(), w)
+		return
+	}
+	utilities.SuccessRespond(websiteDetails, w)
 
 }
