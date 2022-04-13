@@ -3,14 +3,11 @@ package controllers
 import (
 	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
-	"Accessibility-Backend/models"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
 	"encoding/json"
 	"net/http"
-
 	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var Issue entity.Issue
@@ -59,14 +56,8 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	webpageId := vars["webpageId"]
 	issueId := vars["issueId"]
 
-	wpageId, _ := primitive.ObjectIDFromHex(webpageId)
-	ishId, err := primitive.ObjectIDFromHex(issueId)
-	if err != nil {
-		utilities.ErrorResponse(422, err.Error(), w)
-		return
-	}
 
-	issueDetails, err := models.GetIssueByIssueIdAndWebpageId(ishId, wpageId)
+	issueDetails, err := model.GetIssueByWebpageIdAndIssueId(issueId, webpageId)
 	if err != nil {
 		utilities.ErrorResponse(404, "no issue with the provided id", w)
 		return
@@ -82,7 +73,9 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	if updateIssue.Finding != nil && updateIssue.Finding[0].Description != "" {
 		issueDetails.Finding[0].Description = updateIssue.Finding[0].Description
 	}
-	res, err := models.UpdateIssueByIssueIdAndWebpageId(issueDetails, wpageId, ishId)
+	// res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, wpageId, ishId)
+	res, err := "nil",nil
+
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return

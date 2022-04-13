@@ -4,7 +4,6 @@ import (
 	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
-	"Accessibility-Backend/models"
 	"Accessibility-Backend/utilities"
 	"encoding/json"
 	"net/http"
@@ -86,7 +85,7 @@ func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
 	if updateWebpage.Note != "" {
 		webpageDetails.Note = updateWebpage.Note
 	}
-	models.UpdateWebpage(webpageDetails, webpageId)
+	model.UpdateWebpage(webpageDetails, webpageId)
 	res, _ := json.Marshal(webpageDetails)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)

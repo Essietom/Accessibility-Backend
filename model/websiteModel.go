@@ -1,15 +1,15 @@
-package models
+package model
 
 import (
 	"Accessibility-Backend/database"
 	"Accessibility-Backend/entity"
+	"Accessibility-Backend/repository"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreateWebsite(v *entity.Website) (*entity.Website, error) {
-	result, err := database.WebsiteCollection.InsertOne(database.Ctx, v)
+	result, err := repository.SaveWebsite(v)
 	if err != nil {
 		fmt.Println("unable to insert record", err)
 		return nil, err
@@ -21,7 +21,7 @@ func CreateWebsite(v *entity.Website) (*entity.Website, error) {
 func GetAllWebsites() ([]entity.Website, error) {
 	var website entity.Website
 	var websites []entity.Website
-	cursor, err := database.WebsiteCollection.Find(database.Ctx, bson.D{})
+	cursor, err := repository.FindWebsites()
 	if err != nil {
 		defer cursor.Close(database.Ctx)
 		return websites, err
@@ -38,49 +38,30 @@ func GetAllWebsites() ([]entity.Website, error) {
 }
 
 func GetWebsiteById(id string) (*entity.Website, error) {
-	var v entity.Website
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
-	err = database.WebsiteCollection.
-		FindOne(database.Ctx, bson.D{{"_id", objectId}}).
-		Decode(&v)
+	ws, err := repository.FindWebsiteById(objectId)
 	if err != nil {
 		return nil, err
 	}
-	return &v, nil
+	return &ws, nil
 }
 
 func GetWebsiteByField(field string) (*entity.Website, error) {
-	var v entity.Website
 
-	err := database.WebsiteCollection.
-		FindOne(database.Ctx,
-			bson.M{
-				"$or": bson.A{
-					bson.M{
-						"name": &field,
-					},
-					bson.M{
-						"url": &field,
-					},
-				},
-			}).
-		Decode(&v)
+	ws, err := repository.GetWebsiteByField(field)
 	if err != nil {
 		return nil, err
 	}
-	return &v, nil
+	return &ws, nil
 }
 
 func UpdateWebsite(v *entity.Website, id string) (*entity.Website, error) {
 
-	result, err := database.WebsiteCollection.UpdateOne(database.Ctx, bson.M{"_id": id},
-		bson.M{
-			"$set": &v,
-		},
-	)
+	objectId, _ := primitive.ObjectIDFromHex(id)
+	result, err := repository.UpdateWebsite(v, objectId)
 	if err != nil {
 		return nil, err
 	}

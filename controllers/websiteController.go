@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"Accessibility-Backend/entity"
-	"Accessibility-Backend/models"
+	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
 	"encoding/json"
 	"github.com/gorilla/mux"
@@ -14,7 +14,7 @@ var NewWebsite entity.Website
 func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 	vi := &entity.Website{}
 	utilities.ParseBody(r, vi)
-	v, _ := models.CreateWebsite(vi)
+	v, _ := model.CreateWebsite(vi)
 	res, _ := json.Marshal(v)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
@@ -22,7 +22,7 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllWebsites(w http.ResponseWriter, r *http.Request) {
-	criteria, err := models.GetAllWebsites()
+	criteria, err := model.GetAllWebsites()
 	if err != nil {
 
 	}
@@ -35,7 +35,7 @@ func GetAllWebsites(w http.ResponseWriter, r *http.Request) {
 func GetWebsiteById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	websiteId := vars["websiteId"]
-	websiteDetails, err := models.GetWebsiteById(websiteId)
+	websiteDetails, err := model.GetWebsiteById(websiteId)
 	if err != nil {
 
 	}
@@ -51,7 +51,7 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	websiteId := vars["websiteId"]
 
-	websiteDetails, err := models.GetWebsiteById(websiteId)
+	websiteDetails, err := model.GetWebsiteById(websiteId)
 	if err != nil {
 		println("tomiiiii", err)
 		return
@@ -64,7 +64,7 @@ func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
 	if updateWebsite.Url != "" {
 		websiteDetails.Url = updateWebsite.Url
 	}
-	models.UpdateWebsite(websiteDetails, websiteId)
+	model.UpdateWebsite(websiteDetails, websiteId)
 	res, _ := json.Marshal(websiteDetails)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
