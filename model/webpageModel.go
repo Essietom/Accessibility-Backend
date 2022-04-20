@@ -73,11 +73,19 @@ func GetWebpageById(id string) (*entity.Webpage, error) {
 	return &wp, nil
 }
 
-func GetWebpageByField(field string) ([]entity.Webpage, error) {
+func GetWebpageByField(searchField string, sortByField string, orderBy string, pageSize int64, pageNum int64) ([]entity.Webpage, error) {
 	var wp entity.Webpage
 	var webpages []entity.Webpage
+	var order int 
 
-	cursor, err := repository.GetWebpageByField(field)
+	if orderBy == "asc" {
+		order = 1
+	}else{
+		order = -1
+	}
+
+
+	cursor, err := repository.GetWebpageByField(searchField, sortByField, order, pageSize , pageNum )
 
 	if err != nil {
 		defer cursor.Close(database.Ctx)

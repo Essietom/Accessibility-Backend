@@ -2,9 +2,11 @@ package utilities
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/go-playground/validator/v10"
@@ -88,4 +90,12 @@ func StringToPrimitive(id string) (primitive.ObjectID){
 		 
 	}
 	return primId
+}
+
+func StringToInt64(str string) (int64){
+	n, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		fmt.Println("query data type is wrong", str)
+	}
+	return n
 }

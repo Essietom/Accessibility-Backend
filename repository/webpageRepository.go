@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
@@ -45,23 +46,30 @@ func DeleteWebpage(id primitive.ObjectID) error {
 	
 // }
 
-func GetWebpageByField(field string) (*mongo.Cursor, error){
+func GetWebpageByField(queryField string, sortField string, orderby int, pageSize int64, pageNum int64) (*mongo.Cursor, error){
+	findOptions := options.Find()
+	skips := pageSize * (pageNum - 1)
+
+	findOptions.SetSkip(skips)
+	findOptions.SetLimit(pageSize)
+	findOptions.SetSort(bson.D{{sortField, -1}})
 	return database.WebpageCollection.
 		Find(database.Ctx,
 			bson.M{
 				"$or": bson.A{
 					bson.M{
-						"name": &field,
+						"name": &queryField,
 					},
 					bson.M{
-						"website.name": &field,
+						"website.name": &queryField,
 					},
 					bson.M{
-						"url": &field,
+						"url": &queryField,
 					},
 					bson.M{
-						"website.url": &field,
+						"website.url": &queryField,
 					},
 				},
-			})
+			},
+		findOptions)
 }

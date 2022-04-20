@@ -16,8 +16,8 @@ func AddIssue(data dto.IssueRequestBody, websiteId string) (*entity.Issue, error
 	if data.Criteria == nil {
 		data.Criteria = make([]dto.CriteriaRequestBody, 0) // this is alloc free
 	}
-	if data.Finding == nil {
-		data.Finding = make([]dto.FindingRequestBody, 0) // this is alloc free
+	if data.Occurence == nil {
+		data.Occurence = make([]dto.OccurenceRequestBody, 0) // this is alloc free
 	} 
 	
 	isss := data.ToIssueEntities()
@@ -104,7 +104,7 @@ func DeleteIssue(webpageId string, issueId string) error {
 	return  nil
 }
 
-//updates an issue under a website and the findings under that issue
+//updates an issue under a website and the occurences under that issue
 //todo not working
 func UpdateIssueByIssueIdAndWebpageId(issueUpdateBody *entity.Issue, webpageId string, issueId string) (*entity.Issue, error) {
 

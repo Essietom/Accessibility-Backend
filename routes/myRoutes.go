@@ -23,14 +23,14 @@ func RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/webpage/", controllers.SaveWebpageScans).Methods("POST")
 	router.HandleFunc("/webpage/", controllers.GetWebpageScan).Methods("GET")
 	router.HandleFunc("/webpage/{webpageId}", controllers.GetWebpageScanById).Methods("GET")
-	router.HandleFunc("/webpage/field/{webpageField}", controllers.GetWebpageByField).Methods("GET")
+	router.HandleFunc("/webpage", controllers.GetWebpageByField).Methods("GET")
 	//router.HandleFunc("/webpage/{webpageId}", controllers.UpdateWebpageScan).Methods("PUT")
 	router.HandleFunc("/webpage/{webpageId}", controllers.DeleteWebpageScan).Methods("DELETE")
 
 	router.HandleFunc("/issue/{webpageId}", controllers.AddIssue).Methods("POST")
 	router.HandleFunc("/issue/{webpageId}", controllers.GetAllIssuesforWebpageId).Methods("GET")
-	router.HandleFunc("/issue/{webpageId}/{issueId}", controllers.UpdateIssueByIssueIdAndWebpageId).Methods("PUT")
-	router.HandleFunc("/issue/{webpageId}/{issueId}", controllers.DeleteIssueByIssueIdAndWebpageId).Methods("DELETE")
+	router.HandleFunc("/issue", controllers.UpdateIssueByIssueIdAndWebpageId).Methods("PUT")
+	router.HandleFunc("/issue", controllers.DeleteIssueByIssueIdAndWebpageId).Methods("DELETE")
 
 	router.HandleFunc("/website/", controllers.CreateWebsite).Methods("POST")
 	router.HandleFunc("/website/", controllers.GetAllWebsites).Methods("GET")

@@ -38,9 +38,14 @@ func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	webpageField := vars["webpageField"]
-	webpageDetails, err := model.GetWebpageByField(webpageField)
+
+	sortByField := r.URL.Query().Get("sortby")
+	searchField := r.URL.Query().Get("searchField")
+	pageNum := r.URL.Query().Get("pageNum")
+	pageSize := r.URL.Query().Get("pageSize")
+	orderBy := r.URL.Query().Get("orderBy")
+	
+	webpageDetails, err := model.GetWebpageByField(searchField, sortByField, orderBy, utilities.StringToInt64(pageSize), utilities.StringToInt64(pageNum))
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return

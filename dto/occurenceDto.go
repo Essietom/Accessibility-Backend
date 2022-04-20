@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type FindingRequestBody struct {
+type OccurenceRequestBody struct {
 	Description string             `json:"description" validate:"required"`
 	Location    string             `json:"location"`
 	Source      string             `json:"source"`
@@ -14,8 +14,8 @@ type FindingRequestBody struct {
 	Note        string             `json:"note"`
 }
 
-func (data FindingRequestBody) ToFindingEntities() *entity.Finding {
-	return &entity.Finding{
+func (data OccurenceRequestBody) ToOccurenceEntities() *entity.Occurence {
+	return &entity.Occurence{
 		ID: primitive.NewObjectID(),
 		Description:       data.Description,
 		Location:       data.Location,
@@ -25,10 +25,10 @@ func (data FindingRequestBody) ToFindingEntities() *entity.Finding {
 	}
 }
 
-func  GetFindingEntities(findings []FindingRequestBody) *[]entity.Finding{
-	var findingEntities []entity.Finding
-	for _, findi := range findings {	
-		findingEntities = append(findingEntities, *findi.ToFindingEntities())
+func  GetOccurenceEntities(occurences []OccurenceRequestBody) *[]entity.Occurence{
+	var occurenceEntities []entity.Occurence
+	for _, occurrence := range occurences {	
+		occurenceEntities = append(occurenceEntities, *occurrence.ToOccurenceEntities())
 	}
-	return &findingEntities
+	return &occurenceEntities
 }

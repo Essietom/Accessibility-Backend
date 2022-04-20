@@ -13,11 +13,17 @@ type WebpageRequestBody struct {
 	Url      string             `json:"url" validate:"required"`
 	ScanTime string             `json:"scanTime" validate:"required"`
 	Note     string             `json:"note"`
-	Issue    []IssueRequestBody `json:"issue" validate:"required"`
+	Issue    []IssueRequestBody `json:"issues" validate:"required"`
 	Website  WebsiteRequestBody            `json:"website" validate:"required"`
 }
 
-
+type WebpageResponseBody struct {
+	ID     string             `json:"name"`
+	Name     string             `json:"name"`
+	Url      string             `json:"url"`
+	ScanTime string             `json:"scanTime"`
+	Website  WebsiteRequestBody            `json:"website"`
+}
 
 func (data WebpageRequestBody) ToWebpageEntities() *entity.Webpage {
 	return &entity.Webpage{

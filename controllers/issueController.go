@@ -53,11 +53,9 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	var updateIssue = &dto.IssueUpdateBody{}
 	utilities.ParseBody(r, updateIssue)
-	vars := mux.Vars(r)
-	webpageId := vars["webpageId"]
-	issueId := vars["issueId"]
 
-
+	issueId := r.URL.Query().Get("issueId")
+	webpageId := r.URL.Query().Get("webpageId")
 	issueDetails, err := model.GetIssueByWebpageIdAndIssueId(issueId, webpageId)
 	if err != nil {
 		utilities.ErrorResponse(404, "no issue with the provided id", w)
@@ -72,8 +70,8 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	if updateIssue.Impact != "" {
 		issueDetails.Impact = updateIssue.Impact
 	}
-	if updateIssue.Finding != nil && updateIssue.Finding[0].Description != "" {
-		issueDetails.Finding[0].Description = updateIssue.Finding[0].Description
+	if updateIssue.Occurence != nil && updateIssue.Occurence[0].Description != "" {
+		issueDetails.Occurence[0].Description = updateIssue.Occurence[0].Description
 	}
 
 	 res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, webpageId, issueId)
@@ -86,9 +84,8 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 }
 func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	webpageId := vars["webpageId"]
-	issueId := vars["issueId"]
+	issueId := r.URL.Query().Get("issueId")
+	webpageId := r.URL.Query().Get("webpageId")
 	
 	error := model.DeleteIssue(webpageId, issueId)
 
