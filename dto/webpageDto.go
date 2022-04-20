@@ -18,7 +18,7 @@ type WebpageRequestBody struct {
 }
 
 type WebpageResponseBody struct {
-	ID     string             `json:"name"`
+	ID     string             `json:"id"`
 	Name     string             `json:"name"`
 	Url      string             `json:"url"`
 	ScanTime string             `json:"scanTime"`
