@@ -2,9 +2,11 @@ package database
 
 import (
 	"context"
+	"log"
+	"os"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 var (
@@ -15,9 +17,8 @@ var (
 )
 
 func Setup() {
-	host := "127.0.0.1"
-	port := "27017"
-	connectionUri := "mongodb://" + host + ":" + port + "/"
+	connectionUri := os.Getenv("DB_CONNECTION_URI")
+
 	clientOptions := options.Client().ApplyURI(connectionUri)
 	client, err := mongo.Connect(Ctx, clientOptions)
 	if err != nil {
@@ -29,7 +30,7 @@ func Setup() {
 		log.Fatal(err)
 	}
 
-	db := client.Database("AssessibilityDB")
+	db := client.Database(os.Getenv("DB_NAME"))
 	CriteriaCollection = db.Collection("criteria")
 	WebpageCollection = db.Collection("webpage")
 	WebsiteCollection = db.Collection("website")

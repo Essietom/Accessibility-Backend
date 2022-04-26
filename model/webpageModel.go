@@ -63,14 +63,25 @@ func GetAllWebpages() ([]entity.Webpage, error) {
 	return webpages, nil
 }
 
-func GetWebpageById(id string) (*entity.Webpage, error) {
+func GetWebpageById(id string) (dto.WebpageFullResponseBody, error) {
+	var resp dto.WebpageFullResponseBody
 	objectId, _ := primitive.ObjectIDFromHex(id)
 
 	wp, err := repository.FindWebpageById(objectId)
 	if err != nil {
-		return nil, err
+		//return nil, err
 	}
-	return &wp, nil
+	resp.FoundStats = getFoundtypeStats(wp)
+	resp.ImpactStats = getImpactStats(wp)
+	resp.ID = string(wp.ID.String())
+	resp.Issue = wp.Issue
+	resp.Name = wp.Name
+	resp.Note = wp.Note
+	resp.Website = wp.Website
+	resp.ScanTime = wp.ScanTime
+	resp.Url = wp.Url
+
+	return resp, nil
 }
 
 func GetWebpageByField(searchField string, sortByField string, orderBy string, pageSize int64, pageNum int64) ([]entity.Webpage, error) {
@@ -100,6 +111,61 @@ func GetWebpageByField(searchField string, sortByField string, orderBy string, p
 		webpages = append(webpages, wp)
 	}
 	return webpages, nil
+}
+
+func getImpactStats(wp entity.Webpage)dto.ImpactStat{
+
+	var minorCount int = 0
+	var moderateCount int = 0
+	var seriousCount int = 0
+	var criticalCount int = 0
+	var totalCount int = 0
+	var aggResult dto.ImpactStat
+
+	for _, iss := range wp.Issue{
+		switch iss.Impact{
+		case "Serious":
+			seriousCount+=1
+		case "Minor":
+			minorCount+=1
+		case "Moderate":
+			moderateCount+=1
+		case "Critical":
+			criticalCount+=1
+		}
+	}
+	aggResult.Critical = criticalCount
+	aggResult.Moderate = moderateCount
+	aggResult.Minor = minorCount
+	aggResult.Serious = seriousCount
+	aggResult.ImpactTotal = totalCount
+
+	return aggResult
+}
+
+func getFoundtypeStats(wp entity.Webpage)dto.FoundStat{
+
+	var automaticCount int = 0
+	var guidedCount int = 0
+	var needsReviewCount int = 0
+	var totalCount int = 0
+	var aggResult dto.FoundStat
+
+	for _, iss := range wp.Issue{
+		switch iss.Impact{
+		case "Automatic":
+			automaticCount+=1
+		case "Guided":
+			guidedCount+=1
+		case "NeedsReview":
+			needsReviewCount+=1
+		}
+	}
+	aggResult.Automatic = automaticCount
+	aggResult.Guided = guidedCount
+	aggResult.NeedsReview = needsReviewCount
+	aggResult.FoundTotal = totalCount
+	return aggResult
 }
 
 func DeleteWebpage(id string) error {

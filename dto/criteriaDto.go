@@ -2,6 +2,7 @@ package dto
 
 import "Accessibility-Backend/entity"
 
+
 type CriteriaRequestBody struct {
 	ID   string `json:"criteriaId" bson:"_id,omitempty"`
 	Name string `json:"name" validate:"required"`

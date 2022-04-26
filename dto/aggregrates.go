@@ -1,13 +1,16 @@
-
 package dto
 
 type ImpactStat struct {
-	Impact   string `json:"impact"`
-	Count int `json:"count"`
+	Critical   int `json:"critical"`
+	Serious int `json:"serious"`
+	Moderate int `json:"moderate"`
+	Minor int `json:"minor"`
+	ImpactTotal int `json:"impactTotal"`
 }
 
-
 type FoundStat struct {
-	TypeFound   string `json:"typeFound"`
-	Count int `json:"count"`
+	Automatic   int `json:"automatic"`
+	Guided int `json:"guided"`
+	NeedsReview int `json:"needsReview"`
+	FoundTotal int `json:"foundTotal"`
 }

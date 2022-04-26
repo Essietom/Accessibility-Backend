@@ -11,12 +11,13 @@ type Impact int
 type Found int
 
 const (
-	Automatically Found = iota
-	Manually
+	Automatic Found = iota
+	Guided
+	NeedsReview
 )
 // String - Creating common behavior - give the type a String function
 func (f Found) String() string {
-	return [...]string{"Automatically", "Manually"}[f]
+	return [...]string{"Automatic", "Guided", "NeedsReview"}[f]
 }
 const (
 	Minor Impact = iota

@@ -3,12 +3,19 @@ package main
 import (
 	"Accessibility-Backend/database"
 	"Accessibility-Backend/routes"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+	  log.Fatalf("Error loading .env file")
+	}
 	database.Setup()
 	route := mux.NewRouter()
 	routes.RegisterRoutes(route)
