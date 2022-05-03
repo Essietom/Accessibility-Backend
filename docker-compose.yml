@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  accessibility_api_database:
+    image: mongo:4.4.3
+    restart: always
+    ports:
+      - 27017:27017
+  accessibility_api_service:
+#    platform: linux/amd64
+    build: .
+    restart: always
+    ports:
+      - 3000:3000
+    links:
+      - accessibility_api_database
