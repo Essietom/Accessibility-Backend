@@ -4,7 +4,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
-	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -16,10 +15,7 @@ func CreateCriteria(w http.ResponseWriter, r *http.Request) {
 	vi := &entity.Criteria{}
 	utilities.ParseBody(r, vi)
 	v, _ := model.CreateCriteria(vi)
-	res, _ := json.Marshal(v)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(v, w)
 }
 
 func GetCriteria(w http.ResponseWriter, r *http.Request) {
@@ -27,10 +23,7 @@ func GetCriteria(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 	}
-	res, _ := json.Marshal(criteria)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(criteria, w)
 }
 
 func GetCriteriaById(w http.ResponseWriter, r *http.Request) {
@@ -40,10 +33,7 @@ func GetCriteriaById(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 	}
-	res, _ := json.Marshal(criteriaDetails)
-	w.Header().Set("Content-Type", "pkglicatio/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(criteriaDetails, w)
 }
 
 func UpdateCriteria(w http.ResponseWriter, r *http.Request) {
@@ -66,10 +56,7 @@ func UpdateCriteria(w http.ResponseWriter, r *http.Request) {
 		criteriaDetails.Note = updateCriteria.Note
 	}
 	model.UpdateCriteria(criteriaDetails, criteriaId)
-	res, _ := json.Marshal(criteriaDetails)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(criteriaDetails, w)
 
 }
 
@@ -78,9 +65,6 @@ func DeleteCriteria(w http.ResponseWriter, r *http.Request) {
 	criteriaId := vars["criteriaId"]
 	primitiveId, _ := primitive.ObjectIDFromHex(criteriaId)
 	vin := model.DeleteCriteria(primitiveId)
-	res, _ := json.Marshal(vin)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(vin, w)
 
 }

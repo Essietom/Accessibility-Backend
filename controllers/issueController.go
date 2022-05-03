@@ -5,7 +5,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
-	"encoding/json"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -41,10 +40,7 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 		utilities.ErrorResponse(500, err.Error(), w)
 		return
 	}
-	res, _ := json.Marshal(issues)
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utilities.SuccessRespond(issues, w)
 }
 
 
@@ -93,9 +89,7 @@ func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 		utilities.ErrorResponse(500, error.Error(), w)
 		return
 	}
-	res, _ := json.Marshal("successfully deleted")
-	w.Header().Set("Content-Type", "pkglication/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	res := "successfully deleted"
+	utilities.SuccessRespond(res, w)
 
 }
