@@ -14,7 +14,8 @@ var NewCriteria entity.Criteria
 func CreateCriteria(w http.ResponseWriter, r *http.Request) {
 	vi := &entity.Criteria{}
 	utilities.ParseBody(r, vi)
-	v, _ := model.CreateCriteria(vi)
+	// v, _ := model.CreateCriteria(vi)
+	v := "created sth"
 	utilities.SuccessRespond(v, w)
 }
 
