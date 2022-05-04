@@ -39,12 +39,8 @@ func GetAllCriteria() ([]entity.Criteria, error) {
 
 func GetCriteriaById(id string) (*entity.Criteria, error) {
 	var v entity.Criteria
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
-	err = database.CriteriaCollection.
-		FindOne(database.Ctx, bson.D{{"_id", objectId}}).
+	err := database.CriteriaCollection.
+		FindOne(database.Ctx, bson.D{{"_id", id}}).
 		Decode(&v)
 	if err != nil {
 		return nil, err

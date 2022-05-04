@@ -31,10 +31,10 @@ type WebpageFullResponseBody struct {
 
 type WebpageResponseBody struct {
 	ID     string             `json:"id"`
-	Name     string             `json:"name"`
-	Url      string             `json:"url"`
-	ScanTime string             `json:"scanTime"`
-	Website  WebsiteRequestBody            `json:"website"`
+	Name     string             `json:"name,omitempty"`
+	Url      string             `json:"url,omitempty"`
+	ScanTime string             `json:"scanTime,omitempty"`
+	Website  string            `json:"website,omitempty"`
 }
 
 func (data WebpageRequestBody) ToWebpageEntities() *entity.Webpage {
@@ -50,7 +50,7 @@ func (data WebpageRequestBody) ToWebpageEntities() *entity.Webpage {
 }
 
 type Wp entity.Webpage
-func (data Wp) ToWebpageResponse() *WebpageFullResponseBody {
+func (data Wp) ToWebpageFullResponse() *WebpageFullResponseBody {
 	return &WebpageFullResponseBody{
 		ID: data.ID.String(),
 		Name:        data.Name,
@@ -59,5 +59,15 @@ func (data Wp) ToWebpageResponse() *WebpageFullResponseBody {
 		Note: data.Note,
 		Issue:    data.Issue,
 		Website:    data.Website,
+	}
+}
+
+func (data Wp) ToWebpageResponse() *WebpageResponseBody {
+	return &WebpageResponseBody{
+		ID: data.ID.Hex(),
+		Name:        data.Name,
+		Url:       data.Url,
+		ScanTime: data.ScanTime,
+		Website:    data.Website.Name,
 	}
 }

@@ -6,47 +6,50 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-
-func SaveWebpageScan(data *dto.WebpageRequestBody) (*entity.Webpage, error) {
+func SaveWebpageScan(data *dto.WebpageRequestBody) (dto.WebpageResponseBody, error) {
+	var resp dto.WebpageResponseBody
 
 	if data.Issue == nil {
 		data.Issue = make([]dto.IssueRequestBody, 0) // this is alloc free
 	}
-	
+
 	webpageEntity := data.ToWebpageEntities()
 
 	website, err := GetWebsiteByField(webpageEntity.Website.Name)
 	var ws *entity.Website
 
+	//if website doesnt exist , create a new website for that webpage
 	if website == nil {
 		ws, err = CreateWebsite(&data.Website)
 		if err != nil {
 			fmt.Println("unable to insert website", err)
-		}else{
-		fmt.Println("created a new website", err)
-		webpageEntity.Website = *ws
+		} else {
+			fmt.Println("created a new website", err)
+			webpageEntity.Website = *ws
 		}
-	}else{
-	fmt.Println("website already exist", err)
-	webpageEntity.Website = *website
+	} else {
+		//website exists so dont create a new website
+		webpageEntity.Website = *website
 	}
-
 
 	_, err = repository.SaveWebpage(webpageEntity)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
+	resp.ID = webpageEntity.ID.Hex()
 
-	return webpageEntity,nil
+	return resp, nil
 
 }
 
-func GetAllWebpages() ([]entity.Webpage, error) {
+func GetAllWebpages() ([]dto.WebpageResponseBody, error) {
 	var webpage entity.Webpage
-	var webpages []entity.Webpage
+	var webpageResponse dto.WebpageResponseBody
+	var webpages []dto.WebpageResponseBody
 	cursor, err := repository.FindWebpages()
 	if err != nil {
 		defer cursor.Close(database.Ctx)
@@ -58,7 +61,13 @@ func GetAllWebpages() ([]entity.Webpage, error) {
 		if err != nil {
 			return webpages, err
 		}
-		webpages = append(webpages, webpage)
+
+		webpageResponse.ID = webpage.ID.Hex()
+		webpageResponse.Name = webpage.Name
+		webpageResponse.ScanTime = webpage.ScanTime
+		webpageResponse.Url = webpage.Url
+		webpageResponse.Website = webpage.Website.Name
+		webpages = append(webpages, webpageResponse)
 	}
 	return webpages, nil
 }
@@ -69,11 +78,12 @@ func GetWebpageById(id string) (dto.WebpageFullResponseBody, error) {
 
 	wp, err := repository.FindWebpageById(objectId)
 	if err != nil {
-		//return nil, err
+		return resp, err
 	}
+
 	resp.FoundStats = getFoundtypeStats(wp)
 	resp.ImpactStats = getImpactStats(wp)
-	resp.ID = string(wp.ID.String())
+	resp.ID = wp.ID.Hex()
 	resp.Issue = wp.Issue
 	resp.Name = wp.Name
 	resp.Note = wp.Note
@@ -87,16 +97,15 @@ func GetWebpageById(id string) (dto.WebpageFullResponseBody, error) {
 func GetWebpageByField(searchField string, sortByField string, orderBy string, pageSize int64, pageNum int64) ([]entity.Webpage, error) {
 	var wp entity.Webpage
 	var webpages []entity.Webpage
-	var order int 
+	var order int
 
 	if orderBy == "asc" {
 		order = 1
-	}else{
+	} else {
 		order = -1
 	}
 
-
-	cursor, err := repository.GetWebpageByField(searchField, sortByField, order, pageSize , pageNum )
+	cursor, err := repository.GetWebpageByField(searchField, sortByField, order, pageSize, pageNum)
 
 	if err != nil {
 		defer cursor.Close(database.Ctx)
@@ -113,58 +122,56 @@ func GetWebpageByField(searchField string, sortByField string, orderBy string, p
 	return webpages, nil
 }
 
-func getImpactStats(wp entity.Webpage)dto.ImpactStat{
+func getImpactStats(wp entity.Webpage) dto.ImpactStat {
 
 	var minorCount int = 0
 	var moderateCount int = 0
 	var seriousCount int = 0
 	var criticalCount int = 0
-	var totalCount int = 0
 	var aggResult dto.ImpactStat
 
-	for _, iss := range wp.Issue{
-		switch iss.Impact{
+	for _, iss := range wp.Issue {
+		switch iss.Impact {
 		case "Serious":
-			seriousCount+=1
+			seriousCount += 1
 		case "Minor":
-			minorCount+=1
+			minorCount += 1
 		case "Moderate":
-			moderateCount+=1
+			moderateCount += 1
 		case "Critical":
-			criticalCount+=1
+			criticalCount += 1
 		}
 	}
 	aggResult.Critical = criticalCount
 	aggResult.Moderate = moderateCount
 	aggResult.Minor = minorCount
 	aggResult.Serious = seriousCount
-	aggResult.ImpactTotal = totalCount
+	aggResult.ImpactTotal = minorCount + moderateCount + seriousCount + criticalCount
 
 	return aggResult
 }
 
-func getFoundtypeStats(wp entity.Webpage)dto.FoundStat{
+func getFoundtypeStats(wp entity.Webpage) dto.FoundStat {
 
 	var automaticCount int = 0
 	var guidedCount int = 0
 	var needsReviewCount int = 0
-	var totalCount int = 0
 	var aggResult dto.FoundStat
 
-	for _, iss := range wp.Issue{
-		switch iss.Impact{
+	for _, iss := range wp.Issue {
+		switch iss.Found {
 		case "Automatic":
-			automaticCount+=1
+			automaticCount += 1
 		case "Guided":
-			guidedCount+=1
+			guidedCount += 1
 		case "NeedsReview":
-			needsReviewCount+=1
+			needsReviewCount += 1
 		}
 	}
 	aggResult.Automatic = automaticCount
 	aggResult.Guided = guidedCount
 	aggResult.NeedsReview = needsReviewCount
-	aggResult.FoundTotal = totalCount
+	aggResult.FoundTotal = automaticCount + guidedCount + needsReviewCount
 	return aggResult
 }
 

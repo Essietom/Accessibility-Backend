@@ -21,7 +21,7 @@ func RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/criteria/{criteriaId}", controllers.DeleteCriteria).Methods("DELETE")
 
 	router.HandleFunc("/webpage", controllers.SaveWebpageScans).Methods("POST")
-	router.HandleFunc("/webpage", controllers.GetWebpageScan).Methods("GET")
+	//router.HandleFunc("/webpage", controllers.GetWebpageScan).Methods("GET")
 	router.HandleFunc("/webpage/{webpageId}", controllers.GetWebpageScanById).Methods("GET")
 	router.HandleFunc("/webpage", controllers.GetWebpageByField).Methods("GET")
 	//router.HandleFunc("/webpage/{webpageId}", controllers.UpdateWebpageScan).Methods("PUT")

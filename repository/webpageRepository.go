@@ -49,10 +49,9 @@ func DeleteWebpage(id primitive.ObjectID) error {
 func GetWebpageByField(queryField string, sortField string, orderby int, pageSize int64, pageNum int64) (*mongo.Cursor, error){
 	findOptions := options.Find()
 	skips := pageSize * (pageNum - 1)
-
+	findOptions.SetSort(bson.D{{sortField, orderby}})
 	findOptions.SetSkip(skips)
 	findOptions.SetLimit(pageSize)
-	findOptions.SetSort(bson.D{{sortField, -1}})
 	return database.WebpageCollection.
 		Find(database.Ctx,
 			bson.M{
