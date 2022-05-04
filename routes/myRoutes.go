@@ -14,14 +14,14 @@ func RegisterRoutes(router *mux.Router) {
 
 		json.NewEncoder(rw).Encode(map[string]string{"data": "Hello from Mux & mongoDB"})
 	}).Methods("GET")
-	router.HandleFunc("/criteria/", controllers.CreateCriteria).Methods("POST")
-	router.HandleFunc("/criteria/", controllers.GetCriteria).Methods("GET")
+	router.HandleFunc("/criteria", controllers.CreateCriteria).Methods("POST")
+	router.HandleFunc("/criteria", controllers.GetCriteria).Methods("GET")
 	router.HandleFunc("/criteria/{criteriaId}", controllers.GetCriteriaById).Methods("GET")
 	router.HandleFunc("/criteria/{criteriaId}", controllers.UpdateCriteria).Methods("PUT")
 	router.HandleFunc("/criteria/{criteriaId}", controllers.DeleteCriteria).Methods("DELETE")
 
-	router.HandleFunc("/webpage/", controllers.SaveWebpageScans).Methods("POST")
-	router.HandleFunc("/webpage/", controllers.GetWebpageScan).Methods("GET")
+	router.HandleFunc("/webpage", controllers.SaveWebpageScans).Methods("POST")
+	router.HandleFunc("/webpage", controllers.GetWebpageScan).Methods("GET")
 	router.HandleFunc("/webpage/{webpageId}", controllers.GetWebpageScanById).Methods("GET")
 	router.HandleFunc("/webpage", controllers.GetWebpageByField).Methods("GET")
 	//router.HandleFunc("/webpage/{webpageId}", controllers.UpdateWebpageScan).Methods("PUT")
@@ -32,8 +32,8 @@ func RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/issue", controllers.UpdateIssueByIssueIdAndWebpageId).Methods("PUT")
 	router.HandleFunc("/issue", controllers.DeleteIssueByIssueIdAndWebpageId).Methods("DELETE")
 
-	router.HandleFunc("/website/", controllers.CreateWebsite).Methods("POST")
-	router.HandleFunc("/website/", controllers.GetAllWebsites).Methods("GET")
+	router.HandleFunc("/website", controllers.CreateWebsite).Methods("POST")
+	router.HandleFunc("/website", controllers.GetAllWebsites).Methods("GET")
 	router.HandleFunc("/website/{websiteId}", controllers.GetWebsiteById).Methods("GET")
 	router.HandleFunc("/website/{websiteId}", controllers.UpdateWebsite).Methods("PUT")
 
