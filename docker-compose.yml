@@ -3,6 +3,8 @@ services:
   accessibility_api_database:
     image: mongo:4.4.3
     restart: always
+    expose:
+      - 27017
     ports:
       - 27017:27017
   accessibility_api_service:
