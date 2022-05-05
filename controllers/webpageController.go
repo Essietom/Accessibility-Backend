@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +17,6 @@ var Webpage entity.Webpage
 
 
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 	webpageRequest := &dto.WebpageRequestBody{}
 	utilities.ParseBody(r, webpageRequest)
 	if ok, errors := utilities.ValidateInputs(webpageRequest); !ok {
@@ -35,7 +33,6 @@ func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	webpageScan, err := model.GetAllWebpages()
 	if err != nil {
@@ -46,7 +43,6 @@ func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	sortByField := r.URL.Query().Get("sortBy")
 	searchField := r.URL.Query().Get("searchField")
@@ -108,7 +104,6 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
@@ -148,7 +143,6 @@ func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 // }
 
 func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
-//	utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
@@ -193,17 +187,3 @@ func validateAndReturnSortQuery(sortBy string) (string, error) {
 
 }
 
-func validateAndReturnFilterMap(filter string) (map[string]string, error) {
-	splits := strings.Split(filter, ".")
-	if len(splits) != 2 {
-		return nil, errors.New("malformed sortBy query parameter, should be field.orderdirection")
-	}
-
-	field, value := splits[0], splits[1]
-
-	if !stringInSlice(getWebpageFields(), field) {
-		return nil, errors.New("unknown field in filter query parameter")
-	}
-
-	return map[string]string{field: value}, nil
-}

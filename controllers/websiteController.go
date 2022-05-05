@@ -13,7 +13,6 @@ import (
 var NewWebsite entity.Website
 
 func CreateWebsite(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	websiteRequest := &dto.WebsiteRequestBody{}
 	utilities.ParseBody(r, websiteRequest)
@@ -26,7 +25,6 @@ func CreateWebsite(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllWebsites(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	websites, err := model.GetAllWebsites()
 
@@ -38,7 +36,6 @@ func GetAllWebsites(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebsiteById(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	websiteId := vars["websiteId"]
@@ -51,7 +48,6 @@ func GetWebsiteById(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateWebsite(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	var updateWebsite = &entity.Website{}
 	utilities.ParseBody(r, updateWebsite)

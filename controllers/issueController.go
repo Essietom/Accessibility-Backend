@@ -14,7 +14,6 @@ var Issue entity.Issue
 
 
 func AddIssue(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	var ish = &dto.IssueRequestBody{}
 	utilities.ParseBodyTest(r, ish, w)
@@ -35,7 +34,6 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
@@ -51,7 +49,6 @@ func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 
 
 func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	var updateIssue = &dto.IssueUpdateBody{}
 	utilities.ParseBody(r, updateIssue)
@@ -86,7 +83,6 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 }
 func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	issueId := r.URL.Query().Get("issueId")
 	webpageId := r.URL.Query().Get("webpageId")

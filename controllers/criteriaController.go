@@ -12,7 +12,6 @@ import (
 var NewCriteria entity.Criteria
 
 func CreateCriteria(w http.ResponseWriter, r *http.Request) {
-	// utilities.EnableCors(&w)
 
 	vi := &entity.Criteria{}
 	utilities.ParseBody(r, vi)
@@ -21,7 +20,6 @@ func CreateCriteria(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCriteria(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	criteria, err := model.GetAllCriteria()
 	if err != nil {
@@ -31,7 +29,6 @@ func GetCriteria(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCriteriaById(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	criteriaId := vars["criteriaId"]
@@ -43,7 +40,6 @@ func GetCriteriaById(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateCriteria(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
 
 	var updateCriteria = &entity.Criteria{}
 	utilities.ParseBody(r, updateCriteria)
@@ -69,8 +65,6 @@ func UpdateCriteria(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteCriteria(w http.ResponseWriter, r *http.Request) {
-	//utilities.EnableCors(&w)
-
 	vars := mux.Vars(r)
 	criteriaId := vars["criteriaId"]
 	primitiveId, _ := primitive.ObjectIDFromHex(criteriaId)

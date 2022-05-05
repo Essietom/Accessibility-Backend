@@ -7,13 +7,13 @@ import (
 
 func EnableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
    	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
 
 func ValidationResponse(fields map[string][]string, writer http.ResponseWriter, r *http.Request) {
 	EnableCors(&writer)
-	if r.Method == "OPTIONS"{
+	if (*r).Method == "OPTIONS"{
 		writer.WriteHeader(http.StatusOK)
 		return
 	}
@@ -39,11 +39,11 @@ func ValidationResponse(fields map[string][]string, writer http.ResponseWriter, 
 func SuccessRespond(fields interface{}, writer http.ResponseWriter, r *http.Request) {
 
 	EnableCors(&writer)
-	if r.Method == "OPTIONS"{
+	if (*r).Method == "OPTIONS"{
 		writer.WriteHeader(http.StatusOK)
 		return
 	}
-	//fields["status"] = "success"
+	// fields["status"] = "success"
 	message, err := json.Marshal(fields)
 	if err != nil {
 		//An error occurred processing the json
@@ -61,7 +61,7 @@ func SuccessRespond(fields interface{}, writer http.ResponseWriter, r *http.Requ
 
 func ErrorResponse(statusCode int, error string, writer http.ResponseWriter, r *http.Request) {
 	EnableCors(&writer)
-	if r.Method == "OPTIONS"{
+	if (*r).Method == "OPTIONS"{
 		writer.WriteHeader(http.StatusOK)
 		return
 	}
