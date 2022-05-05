@@ -11,7 +11,12 @@ func EnableCors(w *http.ResponseWriter) {
    	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
 
-func ValidationResponse(fields map[string][]string, writer http.ResponseWriter) {
+func ValidationResponse(fields map[string][]string, writer http.ResponseWriter, r *http.Request) {
+	EnableCors(&writer)
+	if r.Method == "OPTIONS"{
+		writer.WriteHeader(http.StatusOK)
+		return
+	}
 	//Create a new map and fill it
 	response := make(map[string]interface{})
 	response["status"] = "error"
@@ -31,7 +36,13 @@ func ValidationResponse(fields map[string][]string, writer http.ResponseWriter) 
 	writer.Write(message)
 }
 
-func SuccessRespond(fields interface{}, writer http.ResponseWriter) {
+func SuccessRespond(fields interface{}, writer http.ResponseWriter, r *http.Request) {
+
+	EnableCors(&writer)
+	if r.Method == "OPTIONS"{
+		writer.WriteHeader(http.StatusOK)
+		return
+	}
 	//fields["status"] = "success"
 	message, err := json.Marshal(fields)
 	if err != nil {
@@ -40,13 +51,20 @@ func SuccessRespond(fields interface{}, writer http.ResponseWriter) {
 		writer.Write([]byte("An error occured internally"))
 	}
 
+	
+
 	//Send header, status code and output to writer
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 	writer.Write(message)
 }
 
-func ErrorResponse(statusCode int, error string, writer http.ResponseWriter) {
+func ErrorResponse(statusCode int, error string, writer http.ResponseWriter, r *http.Request) {
+	EnableCors(&writer)
+	if r.Method == "OPTIONS"{
+		writer.WriteHeader(http.StatusOK)
+		return
+	}
 	//Create a new map and fill it
 	fields := make(map[string]interface{})
 	fields["status"] = "error"

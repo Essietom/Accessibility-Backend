@@ -18,35 +18,35 @@ var Webpage entity.Webpage
 
 
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 	webpageRequest := &dto.WebpageRequestBody{}
 	utilities.ParseBody(r, webpageRequest)
 	if ok, errors := utilities.ValidateInputs(webpageRequest); !ok {
-		utilities.ValidationResponse(errors, w)
+		utilities.ValidationResponse(errors, w,r)
 		return
 	}
 	v, err := model.SaveWebpageScan(webpageRequest)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w,r)
 		return
 	}
-	utilities.SuccessRespond(v, w)
+	utilities.SuccessRespond(v, w,r)
 
 }
 
 func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	webpageScan, err := model.GetAllWebpages()
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w,r)
 		return
 	}
-	utilities.SuccessRespond(webpageScan, w)
+	utilities.SuccessRespond(webpageScan, w,r)
 }
 
 func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	sortByField := r.URL.Query().Get("sortBy")
 	searchField := r.URL.Query().Get("searchField")
@@ -67,7 +67,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	if sortByField != ""{
 	sortQuery, err = validateAndReturnSortQuery(sortByField)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
 	}
@@ -77,11 +77,11 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	if pageSize != "" {
 		limit, err = strconv.Atoi(pageSize)
 		if limit < -1 {
-			utilities.ErrorResponse(500, "invalid value for page size", w)
+			utilities.ErrorResponse(500, "invalid value for page size", w, r)
 			return
 		}
 		if err != nil{
-			utilities.ErrorResponse(500, err.Error(), w)
+			utilities.ErrorResponse(500, err.Error(), w, r)
 			return
 		}
 	}
@@ -90,34 +90,34 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	if pageNum != "" {
 		pgnum, err = strconv.Atoi(pageNum)
 		if limit < -1 {
-			utilities.ErrorResponse(500, "invalid value for page size", w)
+			utilities.ErrorResponse(500, "invalid value for page size", w, r)
 			return
 		}
 		if err != nil{
-			utilities.ErrorResponse(500, err.Error(), w)
+			utilities.ErrorResponse(500, err.Error(), w, r)
 			return		
 		}
 	}
 	
 	webpageDetails, err := model.GetWebpageByField(searchField, sortQuery, orderByInt, int64(limit), int64(pgnum))
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
-	utilities.SuccessRespond(webpageDetails, w)
+	utilities.SuccessRespond(webpageDetails, w, r)
 }
 
 func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	webpageDetails, err := model.GetWebpageById(webpageId)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
-	utilities.SuccessRespond(webpageDetails, w)
+	utilities.SuccessRespond(webpageDetails, w, r)
 }
 
 // func UpdateWebpageScan(w http.ResponseWriter, r *http.Request) {
@@ -148,16 +148,16 @@ func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 // }
 
 func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+//	utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	err := model.DeleteWebpage(webpageId)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
-	utilities.SuccessRespond("sucessfully deleted", w)
+	utilities.SuccessRespond("sucessfully deleted", w, r)
 
 }
 

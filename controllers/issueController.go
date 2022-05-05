@@ -14,7 +14,7 @@ var Issue entity.Issue
 
 
 func AddIssue(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	var ish = &dto.IssueRequestBody{}
 	utilities.ParseBodyTest(r, ish, w)
@@ -22,36 +22,36 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 	webpageId := vars["webpageId"]
 
 	if ok, errors := utilities.ValidateInputs(ish); !ok {
-		utilities.ValidationResponse(errors, w)
+		utilities.ValidationResponse(errors, w, r)
 		return
 	}
 	v, err := model.AddIssue(*ish, webpageId)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
-	utilities.SuccessRespond(v, w)
+	utilities.SuccessRespond(v, w, r)
 
 }
 
 func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	 issues, err := model.GetIssuesByWebpageId(webpageId)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
-	utilities.SuccessRespond(issues, w)
+	utilities.SuccessRespond(issues, w, r)
 }
 
 
 
 
 func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	var updateIssue = &dto.IssueUpdateBody{}
 	utilities.ParseBody(r, updateIssue)
@@ -60,7 +60,7 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	webpageId := r.URL.Query().Get("webpageId")
 	issueDetails, err := model.GetIssueByWebpageIdAndIssueId(issueId, webpageId)
 	if err != nil {
-		utilities.ErrorResponse(404, "no issue with the provided id", w)
+		utilities.ErrorResponse(404, "no issue with the provided id", w, r)
 		return
 
 	}
@@ -79,14 +79,14 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	 res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, webpageId, issueId)
 
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w)
+		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
 	}
-	utilities.SuccessRespond(res, w)
+	utilities.SuccessRespond(res, w, r)
 
 }
 func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	issueId := r.URL.Query().Get("issueId")
 	webpageId := r.URL.Query().Get("webpageId")
@@ -94,10 +94,10 @@ func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	error := model.DeleteIssue(webpageId, issueId)
 
 	if error != nil {
-		utilities.ErrorResponse(500, error.Error(), w)
+		utilities.ErrorResponse(500, error.Error(), w, r)
 		return
 	}
 	res := "successfully deleted"
-	utilities.SuccessRespond(res, w)
+	utilities.SuccessRespond(res, w, r)
 
 }

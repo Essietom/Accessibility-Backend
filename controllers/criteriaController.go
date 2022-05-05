@@ -12,26 +12,26 @@ import (
 var NewCriteria entity.Criteria
 
 func CreateCriteria(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	// utilities.EnableCors(&w)
 
 	vi := &entity.Criteria{}
 	utilities.ParseBody(r, vi)
 	v, _ := model.CreateCriteria(vi)
-	utilities.SuccessRespond(v, w)
+	utilities.SuccessRespond(v, w, r)
 }
 
 func GetCriteria(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	criteria, err := model.GetAllCriteria()
 	if err != nil {
 
 	}
-	utilities.SuccessRespond(criteria, w)
+	utilities.SuccessRespond(criteria, w, r)
 }
 
 func GetCriteriaById(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	criteriaId := vars["criteriaId"]
@@ -39,11 +39,11 @@ func GetCriteriaById(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 
 	}
-	utilities.SuccessRespond(criteriaDetails, w)
+	utilities.SuccessRespond(criteriaDetails, w, r)
 }
 
 func UpdateCriteria(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	var updateCriteria = &entity.Criteria{}
 	utilities.ParseBody(r, updateCriteria)
@@ -64,17 +64,17 @@ func UpdateCriteria(w http.ResponseWriter, r *http.Request) {
 		criteriaDetails.Note = updateCriteria.Note
 	}
 	model.UpdateCriteria(criteriaDetails, criteriaId)
-	utilities.SuccessRespond(criteriaDetails, w)
+	utilities.SuccessRespond(criteriaDetails, w, r)
 
 }
 
 func DeleteCriteria(w http.ResponseWriter, r *http.Request) {
-	utilities.EnableCors(&w)
+	//utilities.EnableCors(&w)
 
 	vars := mux.Vars(r)
 	criteriaId := vars["criteriaId"]
 	primitiveId, _ := primitive.ObjectIDFromHex(criteriaId)
 	vin := model.DeleteCriteria(primitiveId)
-	utilities.SuccessRespond(vin, w)
+	utilities.SuccessRespond(vin, w, r)
 
 }
