@@ -17,6 +17,7 @@ import (
 var Webpage entity.Webpage
 
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
+	utilities.EnableCors(&w)
 	webpageRequest := &dto.WebpageRequestBody{}
 	utilities.ParseBody(r, webpageRequest)
 	if ok, errors := utilities.ValidateInputs(webpageRequest); !ok {
@@ -33,6 +34,8 @@ func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
+	utilities.EnableCors(&w)
+
 	webpageScan, err := model.GetAllWebpages()
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w)
@@ -42,6 +45,7 @@ func GetWebpageScan(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
+	utilities.EnableCors(&w)
 
 	sortByField := r.URL.Query().Get("sortBy")
 	searchField := r.URL.Query().Get("searchField")
@@ -103,6 +107,8 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
+	utilities.EnableCors(&w)
+
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	webpageDetails, err := model.GetWebpageById(webpageId)
@@ -141,6 +147,8 @@ func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 // }
 
 func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
+	utilities.EnableCors(&w)
+
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
 	err := model.DeleteWebpage(webpageId)

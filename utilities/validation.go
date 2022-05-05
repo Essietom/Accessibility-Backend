@@ -24,7 +24,6 @@ func ValidationResponse(fields map[string][]string, writer http.ResponseWriter) 
 	}
 
 	//Send header, status code and output to writer
-	EnableCors(&writer)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusUnprocessableEntity)
 	writer.Write(message)
@@ -40,7 +39,6 @@ func SuccessRespond(fields interface{}, writer http.ResponseWriter) {
 	}
 
 	//Send header, status code and output to writer
-	EnableCors(&writer)
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
 	writer.Write(message)
