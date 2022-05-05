@@ -6,7 +6,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"fmt"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -94,18 +93,12 @@ func GetWebpageById(id string) (dto.WebpageFullResponseBody, error) {
 	return resp, nil
 }
 
-func GetWebpageByField(searchField string, sortByField string, orderBy string, pageSize int64, pageNum int64) ([]entity.Webpage, error) {
-	var wp entity.Webpage
-	var webpages []entity.Webpage
-	var order int
+func GetWebpageByField(searchField string, sortByField string, orderBy int, pageSize int64, pageNum int64) ([]dto.WebpageResponseBody, error) {
+	var webpage entity.Webpage
+	var webpageResponse dto.WebpageResponseBody
+	var webpages []dto.WebpageResponseBody
 
-	if orderBy == "asc" {
-		order = 1
-	} else {
-		order = -1
-	}
-
-	cursor, err := repository.GetWebpageByField(searchField, sortByField, order, pageSize, pageNum)
+	cursor, err := repository.GetWebpageByField(searchField, sortByField, orderBy, pageSize, pageNum)
 
 	if err != nil {
 		defer cursor.Close(database.Ctx)
@@ -113,11 +106,16 @@ func GetWebpageByField(searchField string, sortByField string, orderBy string, p
 	}
 
 	for cursor.Next(database.Ctx) {
-		err := cursor.Decode(&wp)
+		err := cursor.Decode(&webpage)
 		if err != nil {
 			return webpages, err
 		}
-		webpages = append(webpages, wp)
+		webpageResponse.ID = webpage.ID.Hex()
+		webpageResponse.Name = webpage.Name
+		webpageResponse.ScanTime = webpage.ScanTime
+		webpageResponse.Url = webpage.Url
+		webpageResponse.Website = webpage.Website.Name
+		webpages = append(webpages, webpageResponse)
 	}
 	return webpages, nil
 }

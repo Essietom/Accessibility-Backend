@@ -47,28 +47,55 @@ func DeleteWebpage(id primitive.ObjectID) error {
 // }
 
 func GetWebpageByField(queryField string, sortField string, orderby int, pageSize int64, pageNum int64) (*mongo.Cursor, error){
+	filter := bson.M{}
 	findOptions := options.Find()
 	skips := pageSize * (pageNum - 1)
-	findOptions.SetSort(bson.D{{sortField, orderby}})
+	if sortField != ""{
+		findOptions.SetSort(bson.D{{sortField, orderby}})
+	}
 	findOptions.SetSkip(skips)
 	findOptions.SetLimit(pageSize)
-	return database.WebpageCollection.
-		Find(database.Ctx,
-			bson.M{
-				"$or": bson.A{
-					bson.M{
-						"name": &queryField,
+	//total, _ := database.WebpageCollection.CountDocuments(database.Ctx, filter)
+
+	if(queryField!=""){
+		filter = bson.M{
+			"$or": bson.A{
+				bson.M{
+					"name": bson.M{
+						"$regex": primitive.Regex{
+							Pattern : queryField,
+							Options: "i",
+						},
 					},
-					bson.M{
-						"website.name": &queryField,
+				},
+				bson.M{
+					"website.name": bson.M{
+						"$regex": primitive.Regex{
+							Pattern : queryField,
+							Options: "i",
+						},
 					},
-					bson.M{
-						"url": &queryField,
+				},
+				bson.M{
+					"url": bson.M{
+						"$regex": primitive.Regex{
+							Pattern : queryField,
+							Options: "i",
+						},
 					},
-					bson.M{
-						"website.url": &queryField,
+				},
+				bson.M{
+					"website.url": bson.M{
+						"$regex": primitive.Regex{
+							Pattern : queryField,
+							Options: "i",
+						},
 					},
 				},
 			},
-		findOptions)
+		}
+	}
+
+	return database.WebpageCollection.
+		Find(database.Ctx,filter,findOptions)
 }
