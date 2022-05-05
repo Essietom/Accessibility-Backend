@@ -71,8 +71,8 @@ func GetAllWebpages() ([]dto.WebpageResponseBody, error) {
 	return webpages, nil
 }
 
-func GetWebpageById(id string) (dto.WebpageFullResponseBody, error) {
-	var resp dto.WebpageFullResponseBody
+func GetWebpageById(id string) (dto.WebpageFullResponseBodyNew, error) {
+	var resp dto.WebpageFullResponseBodyNew
 	objectId, _ := primitive.ObjectIDFromHex(id)
 
 	wp, err := repository.FindWebpageById(objectId)
@@ -80,8 +80,12 @@ func GetWebpageById(id string) (dto.WebpageFullResponseBody, error) {
 		return resp, err
 	}
 
-	resp.FoundStats = getFoundtypeStats(wp)
-	resp.ImpactStats = getImpactStats(wp)
+	// resp.FoundStats = getFoundtypeStats(wp)
+	// resp.ImpactStats = getImpactStats(wp)
+
+	resp.FoundStats = getFoundStatNew(wp)
+	resp.ImpactStats = getImpactStatNew(wp)
+
 	resp.ID = wp.ID.Hex()
 	resp.Issue = wp.Issue
 	resp.Name = wp.Name
@@ -204,3 +208,71 @@ func DeleteWebpage(id string) error {
 // 	}
 // 	return v, err
 // }
+
+
+func getImpactStatNew(wp entity.Webpage) []dto.ImpactStatNew {
+
+	var aggResult = make([]dto.ImpactStatNew, 0)
+	var minorCount int = 0
+	var moderateCount int = 0
+	var seriousCount int = 0
+	var criticalCount int = 0
+
+	for _, iss := range wp.Issue {
+		switch iss.Impact {
+		case "Serious":
+			seriousCount += 1
+		case "Minor":
+			minorCount += 1
+		case "Moderate":
+			moderateCount += 1
+		case "Critical":
+			criticalCount += 1
+		}
+	}
+	totalCount := minorCount + moderateCount + seriousCount + criticalCount
+    seriousObject := dto.ImpactStatNew{Impact: "Serious", Count: seriousCount}
+    minorObject := dto.ImpactStatNew{Impact: "Minor", Count: minorCount}
+    moderateObject := dto.ImpactStatNew{Impact: "Moderate", Count: moderateCount}
+    criticalObject := dto.ImpactStatNew{Impact: "Critical", Count: criticalCount}
+    totalObject := dto.ImpactStatNew{Impact: "Total", Count: totalCount}
+
+	aggResult =	append(aggResult, seriousObject)
+	aggResult =	append(aggResult, minorObject)
+	aggResult =	append(aggResult, moderateObject)
+	aggResult =	append(aggResult, criticalObject)
+	aggResult =	append(aggResult, totalObject)
+
+	return aggResult
+}
+
+func getFoundStatNew(wp entity.Webpage) []dto.FoundStatNew {
+
+	var aggResult = make([]dto.FoundStatNew, 0)
+	var automaticCount int = 0
+	var guidedCount int = 0
+	var needsReviewCount int = 0
+
+	for _, iss := range wp.Issue {
+		switch iss.Impact {
+		case "Automatic":
+			automaticCount += 1
+		case "Guided":
+			guidedCount += 1
+		case "NeedsReview":
+			needsReviewCount += 1
+		}
+	}
+	totalCount := automaticCount + guidedCount + needsReviewCount 
+    automaticObject := dto.FoundStatNew{Found: "Automatic", Count: automaticCount}
+    guidedObject := dto.FoundStatNew{Found: "Guided", Count: guidedCount}
+    needsReviewObject := dto.FoundStatNew{Found: "Needs Review", Count: needsReviewCount}
+    totalObject := dto.FoundStatNew{Found: "Total", Count: totalCount}
+
+	aggResult =	append(aggResult, automaticObject)
+	aggResult =	append(aggResult, guidedObject)
+	aggResult =	append(aggResult, needsReviewObject)
+	aggResult =	append(aggResult, totalObject)
+
+	return aggResult
+}

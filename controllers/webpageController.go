@@ -69,10 +69,10 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	}
 	
 
-	limit := -1
+	limit := 10
 	if pageSize != "" {
 		limit, err = strconv.Atoi(pageSize)
-		if limit < -1 {
+		if limit < 1 {
 			utilities.ErrorResponse(500, "invalid value for page size", w, r)
 			return
 		}

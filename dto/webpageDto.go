@@ -29,6 +29,18 @@ type WebpageFullResponseBody struct {
 	FoundStats FoundStat             `json:"foundStatistics"`
 }
 
+type WebpageFullResponseBodyNew struct {
+	ID     string             `json:"id"`
+	Name     string             `json:"name"`
+	Url      string             `json:"url"`
+	ScanTime string             `json:"scanTime"`
+	Note     string             `json:"note"`
+	Issue    []entity.Issue `json:"issues"`
+	Website  entity.Website            `json:"website"`
+	ImpactStats []ImpactStatNew             `json:"impactStatistics"`
+	FoundStats []FoundStatNew            `json:"foundStatistics"`
+}
+
 type WebpageResponseBody struct {
 	ID     string             `json:"id"`
 	Name     string             `json:"name,omitempty"`
