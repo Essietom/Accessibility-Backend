@@ -16,6 +16,7 @@ import (
 
 var Webpage entity.Webpage
 
+
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 	utilities.EnableCors(&w)
 	webpageRequest := &dto.WebpageRequestBody{}
