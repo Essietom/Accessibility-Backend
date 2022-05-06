@@ -239,18 +239,15 @@ func getImpactStatNew(wp entity.Webpage) []dto.ImpactStatNew {
 			criticalCount += len(iss.Occurence)
 		}
 	}
-	totalCount := minorCount + moderateCount + seriousCount + criticalCount
     seriousObject := dto.ImpactStatNew{Impact: "serious", Count: seriousCount}
     minorObject := dto.ImpactStatNew{Impact: "minor", Count: minorCount}
     moderateObject := dto.ImpactStatNew{Impact: "moderate", Count: moderateCount}
     criticalObject := dto.ImpactStatNew{Impact: "critical", Count: criticalCount}
-    totalObject := dto.ImpactStatNew{Impact: "total", Count: totalCount}
 
 	aggResult =	append(aggResult, seriousObject)
 	aggResult =	append(aggResult, minorObject)
 	aggResult =	append(aggResult, moderateObject)
 	aggResult =	append(aggResult, criticalObject)
-	aggResult =	append(aggResult, totalObject)
 
 	return aggResult
 }
@@ -272,16 +269,13 @@ func getFoundStatNew(wp entity.Webpage) []dto.FoundStatNew {
 			needsReviewCount += 1
 		}
 	}
-	totalCount := automaticCount + guidedCount + needsReviewCount 
     automaticObject := dto.FoundStatNew{Found: "automatic", Count: automaticCount}
     guidedObject := dto.FoundStatNew{Found: "guided", Count: guidedCount}
     needsReviewObject := dto.FoundStatNew{Found: "needsReview", Count: needsReviewCount}
-    totalObject := dto.FoundStatNew{Found: "total", Count: totalCount}
 
 	aggResult =	append(aggResult, automaticObject)
 	aggResult =	append(aggResult, guidedObject)
 	aggResult =	append(aggResult, needsReviewObject)
-	aggResult =	append(aggResult, totalObject)
 
 	return aggResult
 }
