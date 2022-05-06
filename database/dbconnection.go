@@ -1,10 +1,9 @@
 package database
 
 import (
+	"Accessibility-Backend/utilities"
 	"context"
 	"log"
-	"os"
-
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -17,7 +16,13 @@ var (
 )
 
 func Setup() {
-	connectionUri := os.Getenv("DB_CONNECTION_URI")
+	// connectionUri := os.Getenv("DB_CONNECTION_URI")
+
+	config, err := utilities.LoadConfig(".")
+    if err != nil {
+        log.Fatal("cannot load config:", err)
+    }
+	connectionUri := config.DBConnectionUri
 
 	clientOptions := options.Client().ApplyURI(connectionUri)
 	client, err := mongo.Connect(Ctx, clientOptions)
@@ -30,7 +35,7 @@ func Setup() {
 		log.Fatal(err)
 	}
 
-	db := client.Database(os.Getenv("DB_NAME"))
+	db := client.Database(config.DBName)
 	CriteriaCollection = db.Collection("criteria")
 	WebpageCollection = db.Collection("webpage")
 	WebsiteCollection = db.Collection("website")
