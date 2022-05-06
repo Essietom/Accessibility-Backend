@@ -6,9 +6,6 @@ import (
 	"Accessibility-Backend/utilities"
 	"log"
 	"net/http"
-
-	// "os"
-
 	"github.com/gorilla/mux"
 )
 
