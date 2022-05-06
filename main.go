@@ -6,6 +6,8 @@ import (
 	"Accessibility-Backend/utilities"
 	"log"
 	"net/http"
+	"os"
+
 	"github.com/gorilla/mux"
 )
 
@@ -21,12 +23,10 @@ func main() {
 	routes.RegisterRoutes(route)
 	
 
-	// port := os.Getenv("PORT")
-	// if err := http.ListenAndServe(":" + port, route); err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	port := config.AppPort
+	if port == ""{
+		port  = os.Getenv("PORT")
+	}
 	if err := http.ListenAndServe(":" + port, route); err != nil {
 		log.Fatal(err)
 	}
