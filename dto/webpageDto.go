@@ -6,7 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-
+type WebpagesResult struct {
+	Data []WebpageResponseBody `json:"data"`
+	TotalCount int `json:"totalCount"`
+	Page int `json:"page"`
+	LastPage int `json:"lastPage"`
+}
 
 type WebpageRequestBody struct {
 	Name     string             `json:"name" validate:"required"`

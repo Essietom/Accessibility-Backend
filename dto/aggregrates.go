@@ -24,3 +24,4 @@ type ImpactStatNew struct {
 	Impact   string `json:"impact"`
 	Count int `json:"count"`
 }
+

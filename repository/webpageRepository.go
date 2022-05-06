@@ -46,7 +46,7 @@ func DeleteWebpage(id primitive.ObjectID) error {
 	
 // }
 
-func GetWebpageByField(queryField string, sortField string, orderby int, pageSize int64, pageNum int64) (*mongo.Cursor, error){
+func GetWebpageByField(queryField string, sortField string, orderby int, pageSize int64, pageNum int64) (*mongo.Cursor, error, int){
 	filter := bson.M{}
 	findOptions := options.Find()
 	skips := pageSize * (pageNum - 1)
@@ -55,7 +55,7 @@ func GetWebpageByField(queryField string, sortField string, orderby int, pageSiz
 	}
 	findOptions.SetSkip(skips)
 	findOptions.SetLimit(pageSize)
-	//total, _ := database.WebpageCollection.CountDocuments(database.Ctx, filter)
+	total, _ := database.WebpageCollection.CountDocuments(database.Ctx, filter)
 
 	if(queryField!=""){
 		filter = bson.M{
@@ -96,6 +96,7 @@ func GetWebpageByField(queryField string, sortField string, orderby int, pageSiz
 		}
 	}
 
-	return database.WebpageCollection.
+	cur, err := database.WebpageCollection.
 		Find(database.Ctx,filter,findOptions)
+	return cur, err, int(total)
 }

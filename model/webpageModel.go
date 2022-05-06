@@ -6,6 +6,8 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"fmt"
+	"math"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -97,22 +99,23 @@ func GetWebpageById(id string) (dto.WebpageFullResponseBodyNew, error) {
 	return resp, nil
 }
 
-func GetWebpageByField(searchField string, sortByField string, orderBy int, pageSize int64, pageNum int64) ([]dto.WebpageResponseBody, error) {
+func GetWebpageByField(searchField string, sortByField string, orderBy int, pageSize int64, pageNum int64) (dto.WebpagesResult, error) {
 	var webpage entity.Webpage
 	var webpageResponse dto.WebpageResponseBody
 	var webpages []dto.WebpageResponseBody
+	var webpagesResult dto.WebpagesResult
 
-	cursor, err := repository.GetWebpageByField(searchField, sortByField, orderBy, pageSize, pageNum)
+	cursor, err, total := repository.GetWebpageByField(searchField, sortByField, orderBy, pageSize, pageNum)
 
 	if err != nil {
 		defer cursor.Close(database.Ctx)
-		return webpages, err
+		return webpagesResult, err
 	}
 
 	for cursor.Next(database.Ctx) {
 		err := cursor.Decode(&webpage)
 		if err != nil {
-			return webpages, err
+			return webpagesResult, err
 		}
 		webpageResponse.ID = webpage.ID.Hex()
 		webpageResponse.Name = webpage.Name
@@ -121,7 +124,13 @@ func GetWebpageByField(searchField string, sortByField string, orderBy int, page
 		webpageResponse.Website = webpage.Website.Name
 		webpages = append(webpages, webpageResponse)
 	}
-	return webpages, nil
+
+	webpagesResult.Data = webpages
+	webpagesResult.TotalCount = total
+	webpagesResult.Page = int(pageNum)
+	webpagesResult.LastPage = int(math.Ceil(float64(total)/float64(pageSize))) 
+
+	return webpagesResult, nil
 }
 
 func getImpactStats(wp entity.Webpage) dto.ImpactStat {
@@ -134,13 +143,13 @@ func getImpactStats(wp entity.Webpage) dto.ImpactStat {
 
 	for _, iss := range wp.Issue {
 		switch iss.Impact {
-		case "Serious":
+		case "serious":
 			seriousCount += 1
-		case "Minor":
+		case "minor":
 			minorCount += 1
-		case "Moderate":
+		case "moderate":
 			moderateCount += 1
-		case "Critical":
+		case "critical":
 			criticalCount += 1
 		}
 	}
@@ -162,11 +171,11 @@ func getFoundtypeStats(wp entity.Webpage) dto.FoundStat {
 
 	for _, iss := range wp.Issue {
 		switch iss.Found {
-		case "Automatic":
+		case "automatic":
 			automaticCount += 1
-		case "Guided":
+		case "guided":
 			guidedCount += 1
-		case "NeedsReview":
+		case "needsReview":
 			needsReviewCount += 1
 		}
 	}
@@ -220,22 +229,22 @@ func getImpactStatNew(wp entity.Webpage) []dto.ImpactStatNew {
 
 	for _, iss := range wp.Issue {
 		switch iss.Impact {
-		case "Serious":
+		case "serious":
 			seriousCount += 1
-		case "Minor":
+		case "minor":
 			minorCount += 1
-		case "Moderate":
+		case "moderate":
 			moderateCount += 1
-		case "Critical":
+		case "critical":
 			criticalCount += 1
 		}
 	}
 	totalCount := minorCount + moderateCount + seriousCount + criticalCount
-    seriousObject := dto.ImpactStatNew{Impact: "Serious", Count: seriousCount}
-    minorObject := dto.ImpactStatNew{Impact: "Minor", Count: minorCount}
-    moderateObject := dto.ImpactStatNew{Impact: "Moderate", Count: moderateCount}
-    criticalObject := dto.ImpactStatNew{Impact: "Critical", Count: criticalCount}
-    totalObject := dto.ImpactStatNew{Impact: "Total", Count: totalCount}
+    seriousObject := dto.ImpactStatNew{Impact: "serious", Count: seriousCount}
+    minorObject := dto.ImpactStatNew{Impact: "minor", Count: minorCount}
+    moderateObject := dto.ImpactStatNew{Impact: "moderate", Count: moderateCount}
+    criticalObject := dto.ImpactStatNew{Impact: "critical", Count: criticalCount}
+    totalObject := dto.ImpactStatNew{Impact: "total", Count: totalCount}
 
 	aggResult =	append(aggResult, seriousObject)
 	aggResult =	append(aggResult, minorObject)
@@ -254,20 +263,20 @@ func getFoundStatNew(wp entity.Webpage) []dto.FoundStatNew {
 	var needsReviewCount int = 0
 
 	for _, iss := range wp.Issue {
-		switch iss.Impact {
-		case "Automatic":
+		switch iss.Found {
+		case "automatic":
 			automaticCount += 1
-		case "Guided":
+		case "guided":
 			guidedCount += 1
-		case "NeedsReview":
+		case "needsReview":
 			needsReviewCount += 1
 		}
 	}
 	totalCount := automaticCount + guidedCount + needsReviewCount 
-    automaticObject := dto.FoundStatNew{Found: "Automatic", Count: automaticCount}
-    guidedObject := dto.FoundStatNew{Found: "Guided", Count: guidedCount}
-    needsReviewObject := dto.FoundStatNew{Found: "Needs Review", Count: needsReviewCount}
-    totalObject := dto.FoundStatNew{Found: "Total", Count: totalCount}
+    automaticObject := dto.FoundStatNew{Found: "automatic", Count: automaticCount}
+    guidedObject := dto.FoundStatNew{Found: "guided", Count: guidedCount}
+    needsReviewObject := dto.FoundStatNew{Found: "needsReview", Count: needsReviewCount}
+    totalObject := dto.FoundStatNew{Found: "total", Count: totalCount}
 
 	aggResult =	append(aggResult, automaticObject)
 	aggResult =	append(aggResult, guidedObject)

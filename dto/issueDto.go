@@ -11,22 +11,22 @@ type Impact int
 type Found int
 
 const (
-	Automatic Found = iota
-	Guided
-	NeedsReview
+	automatic Found = iota
+	guided
+	needsReview
 )
 // String - Creating common behavior - give the type a String function
 func (f Found) String() string {
-	return [...]string{"Automatic", "Guided", "NeedsReview"}[f]
+	return [...]string{"automatic", "guided", "needsReview"}[f]
 }
 const (
-	Minor Impact = iota
-	Moderate
-	Serious
-	Critical
+	minor Impact = iota
+	moderate    
+	serious
+	critical
 )
 func (i Impact) String() string {
-	return [...]string{"Minor", "Moderate", "Serious", "Critical"}[i]
+	return [...]string{"minor", "moderate", "serious", "critical"}[i]
 }
 
 type IssueRequestBody struct {
