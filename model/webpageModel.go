@@ -144,13 +144,13 @@ func getImpactStats(wp entity.Webpage) dto.ImpactStat {
 	for _, iss := range wp.Issue {
 		switch iss.Impact {
 		case "serious":
-			seriousCount += 1
+			seriousCount += len(iss.Occurence)
 		case "minor":
-			minorCount += 1
+			minorCount += len(iss.Occurence)
 		case "moderate":
-			moderateCount += 1
+			moderateCount += len(iss.Occurence)
 		case "critical":
-			criticalCount += 1
+			criticalCount += len(iss.Occurence)
 		}
 	}
 	aggResult.Critical = criticalCount
@@ -230,13 +230,13 @@ func getImpactStatNew(wp entity.Webpage) []dto.ImpactStatNew {
 	for _, iss := range wp.Issue {
 		switch iss.Impact {
 		case "serious":
-			seriousCount += 1
+			seriousCount += len(iss.Occurence)
 		case "minor":
-			minorCount += 1
+			minorCount += len(iss.Occurence)
 		case "moderate":
-			moderateCount += 1
+			moderateCount += len(iss.Occurence)
 		case "critical":
-			criticalCount += 1
+			criticalCount += len(iss.Occurence)
 		}
 	}
 	totalCount := minorCount + moderateCount + seriousCount + criticalCount
