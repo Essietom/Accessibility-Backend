@@ -97,3 +97,20 @@ func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	utilities.SuccessRespond(res, w, r)
 
 }
+
+func DeleteOccurenceIdAndIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
+
+	issueId := r.URL.Query().Get("issueId")
+	webpageId := r.URL.Query().Get("webpageId")
+	occurenceId := r.URL.Query().Get("occurenceId")
+
+	error := model.DeleteOccurence(webpageId, issueId, occurenceId)
+
+	if error != nil {
+		utilities.ErrorResponse(500, error.Error(), w, r)
+		return
+	}
+	res := "successfully deleted"
+	utilities.SuccessRespond(res, w, r)
+
+}

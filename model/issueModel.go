@@ -121,3 +121,26 @@ func UpdateIssueByIssueIdAndWebpageId(issueUpdateBody *entity.Issue, webpageId s
 	}
 	return issueUpdateBody, nil
 }
+
+
+
+//update website websiteid, pull issue where webpage id = webpage and issue id = issueid
+func DeleteOccurence(webpageId string, issueId string, occurenceId string) error {
+
+	ishId, _ := primitive.ObjectIDFromHex(issueId)	
+	wpId, _ := primitive.ObjectIDFromHex(webpageId)
+	occId, _ := primitive.ObjectIDFromHex(occurenceId)
+
+	result, err := repository.DeleteOccurence(wpId, ishId, occId)
+	if err != nil {
+		return errors.New("some error occurred")
+	}
+	if result.MatchedCount == 0 {
+		return  errors.New("no webpage found with the id provided")
+	}
+	if result.ModifiedCount == 0 {
+		return errors.New("no issue found for provided id,issue was not successfully updated")
+	}
+
+	return  nil
+}

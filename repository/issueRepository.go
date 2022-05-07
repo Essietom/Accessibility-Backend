@@ -69,6 +69,21 @@ func DeleteIssue(webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mon
 	
 }
 
+func DeleteOccurence(webpageId primitive.ObjectID, issueId primitive.ObjectID, occurenceId primitive.ObjectID) (*mongo.UpdateResult, error) {
+
+	return database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId, "issue._id":issueId},
+		bson.M{
+			"$pull": bson.M{
+				"issue.$.occurence": bson.M{
+					"_id": occurenceId,
+				},
+			},
+		},
+	)
+
+	
+}
+
 func UpdateIssue(issueBody *entity.Issue, webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mongo.SingleResult) {
 
 	return database.WebpageCollection.FindOneAndUpdate(database.Ctx, bson.M{"_id": webpageId},
