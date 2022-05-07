@@ -6,8 +6,6 @@ import (
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 var Issue entity.Issue
@@ -17,8 +15,8 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 
 	var ish = &dto.IssueRequestBody{}
 	utilities.ParseBodyTest(r, ish, w)
-	vars := mux.Vars(r)
-	webpageId := vars["webpageId"]
+	webpageId := r.URL.Query().Get("webpageId")
+
 
 	if ok, errors := utilities.ValidateInputs(ish); !ok {
 		utilities.ValidationResponse(errors, w, r)
@@ -35,8 +33,8 @@ func AddIssue(w http.ResponseWriter, r *http.Request) {
 
 func GetAllIssuesforWebpageId(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)
-	webpageId := vars["webpageId"]
+	webpageId := r.URL.Query().Get("webpageId")
+
 	 issues, err := model.GetIssuesByWebpageId(webpageId)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w, r)
