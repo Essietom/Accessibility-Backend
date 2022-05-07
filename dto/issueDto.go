@@ -10,21 +10,21 @@ import (
 type Impact int
 type Found int
 
-const (
-	automatic Found = iota
-	guided
-	needsReview
-)
+// const (
+// 	automatic Found = iota
+// 	guided
+// 	needsReview
+// )
 // String - Creating common behavior - give the type a String function
 func (f Found) String() string {
 	return [...]string{"automatic", "guided", "needsReview"}[f]
 }
-const (
-	minor Impact = iota
-	moderate    
-	serious
-	critical
-)
+// const (
+// 	minor Impact = iota
+// 	moderate    
+// 	serious
+// 	critical
+// )
 func (i Impact) String() string {
 	return [...]string{"minor", "moderate", "serious", "critical"}[i]
 }
@@ -32,8 +32,8 @@ func (i Impact) String() string {
 type IssueRequestBody struct {
 	Criteria  []CriteriaRequestBody         `json:"criteria" validate:"required" `
 	Occurence   []OccurenceRequestBody          `json:"occurences" validate:"required"`
-	Impact    Impact             `json:"impact" validate:"required"`
-	Found     Found             `json:"found" validate:"required"`
+	Impact    string             `json:"impact" validate:"required"`
+	Found     string             `json:"found" validate:"required"`
 	Note      string             `json:"note"`
 	Name      string             `json:"name"`
 }
@@ -49,8 +49,8 @@ type IssueUpdateBody struct {
 func (data IssueRequestBody) ToIssueEntities() *entity.Issue {
 	return &entity.Issue{
 		ID: primitive.NewObjectID(),
-		Impact:        data.Impact.String(),
-		Found:       data.Found.String(),
+		Impact:        data.Impact,
+		Found:       data.Found,
 		Note: data.Note,
 		Name: data.Name,
 		Criteria:    *GetIssueCriteria(data.Criteria),
