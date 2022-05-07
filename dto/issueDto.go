@@ -14,10 +14,11 @@ type Found int
 // 	automatic Found = iota
 // 	guided
 // 	needsReview
+// 	manual
 // )
 // String - Creating common behavior - give the type a String function
 func (f Found) String() string {
-	return [...]string{"automatic", "guided", "needsReview"}[f]
+	return [...]string{"automatic", "guided", "needsReview", "manual"}[f]
 }
 // const (
 // 	minor Impact = iota

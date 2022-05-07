@@ -7,6 +7,7 @@ import (
 	"Accessibility-Backend/repository"
 	"fmt"
 	"math"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -228,7 +229,7 @@ func getImpactStatNew(wp entity.Webpage) []dto.ImpactStatNew {
 	var criticalCount int = 0
 
 	for _, iss := range wp.Issue {
-		switch iss.Impact {
+		switch strings.ToLower(iss.Impact) {
 		case "serious":
 			seriousCount += len(iss.Occurence)
 		case "minor":
@@ -257,25 +258,30 @@ func getFoundStatNew(wp entity.Webpage) []dto.FoundStatNew {
 	var aggResult = make([]dto.FoundStatNew, 0)
 	var automaticCount int = 0
 	var guidedCount int = 0
+	var manualCount int = 0
 	var needsReviewCount int = 0
 
 	for _, iss := range wp.Issue {
-		switch iss.Found {
+		switch strings.ToLower(iss.Found) {
 		case "automatic":
-			automaticCount += 1
+			automaticCount += len(iss.Occurence)
 		case "guided":
-			guidedCount += 1
+			guidedCount += len(iss.Occurence)
 		case "needsReview":
-			needsReviewCount += 1
+			needsReviewCount += len(iss.Occurence)
+		case "manual":
+			manualCount += len(iss.Occurence)
 		}
 	}
     automaticObject := dto.FoundStatNew{Found: "automatic", Count: automaticCount}
     guidedObject := dto.FoundStatNew{Found: "guided", Count: guidedCount}
     needsReviewObject := dto.FoundStatNew{Found: "needsReview", Count: needsReviewCount}
+    manualObject := dto.FoundStatNew{Found: "manual", Count: manualCount}
 
 	aggResult =	append(aggResult, automaticObject)
 	aggResult =	append(aggResult, guidedObject)
 	aggResult =	append(aggResult, needsReviewObject)
+	aggResult =	append(aggResult, manualObject)
 
 	return aggResult
 }
