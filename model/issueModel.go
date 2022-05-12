@@ -139,7 +139,7 @@ func DeleteOccurence(webpageId string, issueId string, occurenceId string) error
 		return  errors.New("no webpage found with the id provided")
 	}
 	if result.ModifiedCount == 0 {
-		return errors.New("no issue found for provided id,issue was not successfully updated")
+		return errors.New("the occurence id provided does  not exist for the provided issue id,occurrence was not successfully deleted")
 	}
 
 	//check result, delete issue where occurence is empty
