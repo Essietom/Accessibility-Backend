@@ -6,6 +6,7 @@ import (
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
 	"errors"
+	"log"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -59,7 +60,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 		orderByInt = -1
 	}
 
-	sortQuery := "scanTime"
+	sortQuery := "scantime"
 	if sortByField != ""{
 	sortQuery, err = validateAndReturnSortQuery(sortByField)
 	if err != nil {
@@ -94,7 +95,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 			return		
 		}
 	}
-	
+	log.Print("fields", searchField, sortQuery, orderByInt)
 	webpageDetails, err := model.GetWebpageByField(searchField, sortQuery, orderByInt, int64(limit), int64(pgnum))
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w, r)
@@ -179,7 +180,7 @@ func getWebpageFields() []string {
 
 func validateAndReturnSortQuery(sortBy string) (string, error) {
 	
-	if !stringInSlice(getWebpageFields(), sortBy) {
+	if !stringInSlice([]string{"name", "scantime", "website", "url"}, sortBy) {
 		return "", errors.New("unknown field in sortBy query parameter")
 	}
 
