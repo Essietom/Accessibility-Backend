@@ -142,5 +142,8 @@ func DeleteOccurence(webpageId string, issueId string, occurenceId string) error
 		return errors.New("no issue found for provided id,issue was not successfully updated")
 	}
 
+	//check result, delete issue where occurence is empty
+	
+
 	return  nil
 }

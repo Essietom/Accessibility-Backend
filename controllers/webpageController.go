@@ -59,7 +59,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 		orderByInt = -1
 	}
 
-	sortQuery := "scantime"
+	sortQuery := "scanTime"
 	if sortByField != ""{
 	sortQuery, err = validateAndReturnSortQuery(sortByField)
 	if err != nil {
