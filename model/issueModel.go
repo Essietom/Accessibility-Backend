@@ -6,6 +6,8 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"errors"
+	"log"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -139,8 +141,10 @@ func DeleteOccurence(webpageId string, issueId string, occurenceId string) error
 		return  errors.New("no webpage found with the id provided")
 	}
 	if result.ModifiedCount == 0 {
+		log.Print("can't delete occurence because it doesnt exist");
 		return errors.New("the occurence id provided does  not exist for the provided issue id,occurrence was not successfully deleted")
 	}
+	log.Print("An issue occurence got deleted");
 
 	//check result, delete issue where occurence is empty
 	
