@@ -85,6 +85,24 @@ func GetIssueByWebpageIdAndIssueId(issueId string, webpageId string) (*entity.Is
 	return &issue, nil
 }
 
+func GetOccurenceCountForIssue(issueId string, webpageId string) (int){
+	var cnt entity.Count
+	ishId, _ := primitive.ObjectIDFromHex(issueId)	
+	wpId, _ := primitive.ObjectIDFromHex(webpageId)
+	cursor, err := repository.GetOccurenceCount(ishId, wpId)
+	if err != nil {
+		return 0
+	}
+
+	for cursor.Next(database.Ctx) {
+		err := cursor.Decode(&cnt)
+		if err != nil {
+		return 0
+		}
+	}
+	return int(cnt.Count)
+}
+
 
 //update website websiteid, pull issue where webpage id = webpage and issue id = issueid
 func DeleteIssue(webpageId string, issueId string) error {
@@ -107,7 +125,6 @@ func DeleteIssue(webpageId string, issueId string) error {
 }
 
 //updates an issue under a website and the occurences under that issue
-//todo not working
 func UpdateIssueByIssueIdAndWebpageId(issueUpdateBody *entity.Issue, webpageId string, issueId string) (*entity.Issue, error) {
 
 	var issue entity.Issue
@@ -132,7 +149,7 @@ func DeleteOccurence(webpageId string, issueId string, occurenceId string) error
 	ishId, _ := primitive.ObjectIDFromHex(issueId)	
 	wpId, _ := primitive.ObjectIDFromHex(webpageId)
 	occId, _ := primitive.ObjectIDFromHex(occurenceId)
-
+	
 	result, err := repository.DeleteOccurence(wpId, ishId, occId)
 	if err != nil {
 		return errors.New("some error occurred")
@@ -146,8 +163,21 @@ func DeleteOccurence(webpageId string, issueId string, occurenceId string) error
 	}
 	log.Print("An issue occurence got deleted");
 
-	//check result, delete issue where occurence is empty
+	return  nil
+
+	}
+
 	
 
-	return  nil
+	
+func DeleteOccurenceOrIssue(webpageId string, issueId string, occurenceId string) error{
+		
+	occurenceCount := GetOccurenceCountForIssue(issueId,webpageId)
+
+	if occurenceCount <= 1{
+		return DeleteIssue(webpageId, issueId)
+	}else{
+		return DeleteOccurence(webpageId, issueId, occurenceId)
+	}
+
 }

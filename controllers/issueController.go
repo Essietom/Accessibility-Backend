@@ -102,7 +102,7 @@ func DeleteOccurenceIdAndIssueIdAndWebpageId(w http.ResponseWriter, r *http.Requ
 	webpageId := r.URL.Query().Get("webpageId")
 	occurenceId := r.URL.Query().Get("occurenceId")
 
-	error := model.DeleteOccurence(webpageId, issueId, occurenceId)
+	error := model.DeleteOccurenceOrIssue(webpageId, issueId, occurenceId)
 
 	if error != nil {
 		utilities.ErrorResponse(500, error.Error(), w, r)

@@ -13,4 +13,9 @@ type Issue struct {
 	Name      string             `json:"name"`
 }
 
+type Count struct{
+	ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"` 
+	Count int64             `json:"count"`
+}
+
 

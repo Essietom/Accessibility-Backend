@@ -69,8 +69,36 @@ func DeleteIssue(webpageId primitive.ObjectID, issueId primitive.ObjectID) (*mon
 	
 }
 
-func DeleteOccurence(webpageId primitive.ObjectID, issueId primitive.ObjectID, occurenceId primitive.ObjectID) (*mongo.UpdateResult, error) {
+func GetOccurenceCount(issueId primitive.ObjectID, webpageId primitive.ObjectID) (*mongo.Cursor, error) {
+	return database.WebpageCollection.
+		Aggregate(database.Ctx, bson.A{
+			bson.M{
+				"$match": bson.M{
+					"_id": webpageId,
+				},
+			},
+			bson.M{
+				"$unwind": "$issue",
+			},
+			bson.M{
+				"$match": bson.M{
+					"issue._id": issueId,
+				},
+			},
+			bson.M{
+				"$project": bson.M{
+					"count": bson.M{
+						"$size": "$issue.occurence",
+					},
+				},
+			},
+		},
+		)
+}
+			
 
+
+func DeleteOccurence(webpageId primitive.ObjectID, issueId primitive.ObjectID, occurenceId primitive.ObjectID) (*mongo.UpdateResult, error) {
 	return database.WebpageCollection.UpdateOne(database.Ctx, bson.M{"_id": webpageId, "issue._id":issueId},
 		bson.M{
 			"$pull": bson.M{
