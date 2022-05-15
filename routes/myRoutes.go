@@ -31,7 +31,7 @@ func RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/issue", controllers.GetAllIssuesforWebpageId).Methods("GET", "OPTIONS")
 	router.HandleFunc("/issue", controllers.UpdateIssueByIssueIdAndWebpageId).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/issue", controllers.DeleteIssueByIssueIdAndWebpageId).Methods("DELETE", "OPTIONS")
-	router.HandleFunc("/occurence", controllers.DeleteOccurenceIdAndIssueIdAndWebpageId).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/occurence", controllers.DeleteOccurenceIdAndIssueIdAndWebpageId).Methods("DELETE")
 
 	router.HandleFunc("/website", controllers.CreateWebsite).Methods("POST", "OPTIONS")
 	router.HandleFunc("/website", controllers.GetAllWebsites).Methods("GET", "OPTIONS")
