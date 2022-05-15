@@ -157,10 +157,10 @@ func DeleteOccurence(webpageId string, issueId string, occurenceId string) error
 	if result.MatchedCount == 0 {
 		return  errors.New("no webpage found with the id provided")
 	}
-	if result.ModifiedCount == 0 {
-		log.Print("can't delete occurence because it doesnt exist");
-		return errors.New("the occurence id provided does  not exist for the provided issue id,occurrence was not successfully deleted")
-	}
+	// if result.ModifiedCount == 0 {
+	// 	log.Print("can't delete occurence because it doesnt exist");
+	// 	return errors.New("the occurence id provided does  not exist for the provided issue id,occurrence was not successfully deleted")
+	// }
 	log.Print("An issue occurence got deleted");
 
 	return  nil
