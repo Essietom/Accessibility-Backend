@@ -85,6 +85,32 @@ func GetIssueByWebpageIdAndIssueId(issueId string, webpageId string) (*entity.Is
 	return &issue, nil
 }
 
+func GetOccurenceById(issueId string, webpageId string, occurenceId string) (*entity.Occurence, error) {
+	var occurence entity.Occurence
+	ishId, _ := primitive.ObjectIDFromHex(issueId)	
+	wpId, _ := primitive.ObjectIDFromHex(webpageId)
+	occId, _ := primitive.ObjectIDFromHex(occurenceId)
+
+
+	cursor, err := repository.FindOccurenceById(ishId, wpId, occId)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("occurence not found")
+		}
+		return nil, err
+	}
+
+	for cursor.Next(database.Ctx) {
+		err := cursor.Decode(&occurence)
+		if err != nil {
+			log.Println("some error occured while decoding")
+			return &occurence, err
+
+		}
+	}
+	return &occurence, nil
+}
+
 func GetOccurenceCountForIssue(issueId string, webpageId string) (int){
 	var cnt entity.Count
 	ishId, _ := primitive.ObjectIDFromHex(issueId)	
@@ -140,6 +166,24 @@ func UpdateIssueByIssueIdAndWebpageId(issueUpdateBody *entity.Issue, webpageId s
 	}
 	return issueUpdateBody, nil
 }
+
+func UpdateOccurence(occurenceUpdateBody *entity.Occurence, webpageId string, issueId string, occurenceId string) (*entity.Occurence, error) {
+
+	var occurence entity.Occurence
+	ishId, _ := primitive.ObjectIDFromHex(issueId)	
+	wpId, _ := primitive.ObjectIDFromHex(webpageId)
+	occId, _ := primitive.ObjectIDFromHex(occurenceId)
+
+	err := repository.UpdateOccurence(occurenceUpdateBody, wpId, ishId, occId).Decode(&occurence)
+
+
+	if err != nil {
+		return nil, err
+
+	}
+	return occurenceUpdateBody, nil
+}
+
 
 
 

@@ -14,6 +14,14 @@ type OccurenceRequestBody struct {
 	Note        string             `json:"note"`
 }
 
+type OccurenceUpdateBody struct {
+	Description string             `json:"description"`
+	Location    string             `json:"location"`
+	Source      string             `json:"source"`
+	Fix         string             `json:"fix"`
+	Note        string             `json:"note"`
+}
+
 func (data OccurenceRequestBody) ToOccurenceEntities() *entity.Occurence {
 	return &entity.Occurence{
 		ID: primitive.NewObjectID(),
