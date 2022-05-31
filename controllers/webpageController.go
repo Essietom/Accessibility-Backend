@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var Webpage entity.Webpage
@@ -19,7 +20,12 @@ var Webpage entity.Webpage
 
 func SaveWebpageScans(w http.ResponseWriter, r *http.Request) {
 	webpageRequest := &dto.WebpageRequestBody{}
-	utilities.ParseBody(r, webpageRequest)
+
+	 err := utilities.ParseBodyTest(r, webpageRequest, w)
+	 if err != nil {
+		utilities.ErrorResponse(http.StatusBadRequest, err.Error(), w,r)
+		return
+	}
 	if ok, errors := utilities.ValidateInputs(webpageRequest); !ok {
 		utilities.ValidationResponse(errors, w,r)
 		return
@@ -64,7 +70,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	if sortByField != ""{
 	sortQuery, err = validateAndReturnSortQuery(sortByField)
 	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w, r)
+		utilities.ErrorResponse(400, err.Error(), w, r)
 		return
 	}
 	}
@@ -74,7 +80,7 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	if pageSize != "" {
 		limit, err = strconv.Atoi(pageSize)
 		if limit < 1 {
-			utilities.ErrorResponse(500, "invalid value for page size", w, r)
+			utilities.ErrorResponse(400, "invalid value for page size", w, r)
 			return
 		}
 		if err != nil{
@@ -87,11 +93,11 @@ func GetWebpageByField(w http.ResponseWriter, r *http.Request) {
 	if pageNum != "" {
 		pgnum, err = strconv.Atoi(pageNum)
 		if limit < -1 {
-			utilities.ErrorResponse(500, "invalid value for page size", w, r)
+			utilities.ErrorResponse(400, "invalid value for page size", w, r)
 			return
 		}
 		if err != nil{
-			utilities.ErrorResponse(500, err.Error(), w, r)
+			utilities.ErrorResponse(400, err.Error(), w, r)
 			return		
 		}
 	}
@@ -108,7 +114,12 @@ func GetWebpageScanById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	webpageDetails, err := model.GetWebpageById(webpageId)
+	wpid, err := primitive.ObjectIDFromHex(webpageId)
+	if err != nil {
+		utilities.ErrorResponse(400, "the webpageid passed is invalid", w, r)
+		return
+	}
+	webpageDetails, err := model.GetWebpageById(wpid)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w, r)
 		return
@@ -147,7 +158,12 @@ func DeleteWebpageScan(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	webpageId := vars["webpageId"]
-	err := model.DeleteWebpage(webpageId)
+	objectId, err := primitive.ObjectIDFromHex(webpageId)
+	if err != nil {
+		utilities.ErrorResponse(400, "the webpageid passed is invalid", w, r)
+		return
+	}
+	err = model.DeleteWebpage(objectId)
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w, r)
 		return

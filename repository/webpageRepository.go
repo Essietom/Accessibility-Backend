@@ -27,10 +27,9 @@ func SaveWebpage(wp *entity.Webpage) (*mongo.InsertOneResult, error) {
 	return database.WebpageCollection.InsertOne(database.Ctx, wp)
 }
 
-func DeleteWebpage(id primitive.ObjectID) error {
+func DeleteWebpage(id primitive.ObjectID) (*mongo.DeleteResult, error) {
 
-	_, err := database.WebpageCollection.DeleteOne(database.Ctx, bson.D{{"_id", id}})
-	return err
+	return database.WebpageCollection.DeleteOne(database.Ctx, bson.D{{"_id", id}})
 
 	
 }

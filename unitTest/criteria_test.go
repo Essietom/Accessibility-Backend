@@ -22,7 +22,10 @@ func TestCriteriaWithEmptyName(t *testing.T) {
 //case 2: check for duplicate criteria entry - check by name
 
 func TestGetCriteria(t *testing.T) {
-	req, _ := http.NewRequest("GET", "/criteria", nil)
+	req, err := http.NewRequest("GET", "/criteria", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(controllers.GetCriteria)
 	handler.ServeHTTP(rr, req)
@@ -33,6 +36,31 @@ func TestGetCriteria(t *testing.T) {
 
 	// Check the response body is what we expect.
 	expected := `[{"id":"9","name":"Krish","note":"Bhanushali"}]`
+	if rr.Body.String() != expected {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), expected)
+	}
+}
+
+func TestGetCriteriaById(t *testing.T){
+	req, err := http.NewRequest("GET", "/criteria", nil)
+	if err!=nil{
+		t.Fatal(err)
+	}
+
+	q:=req.URL.Query()
+	q.Add("id", "1")
+	req.URL.RawQuery = q.Encode()
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(controllers.GetCriteriaById)
+	handler.ServeHTTP(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+
+	// Check the response body is what we expect.
+	expected := `{"id":"9","name":"Krish","note":"Bhanushali"}`
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)

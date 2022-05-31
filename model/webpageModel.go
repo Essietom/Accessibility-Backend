@@ -5,11 +5,14 @@ import (
 	"Accessibility-Backend/dto"
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
+	"errors"
 	"fmt"
+	"log"
 	"math"
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func SaveWebpageScan(data *dto.WebpageRequestBody) (dto.WebpageResponseBody, error) {
@@ -74,12 +77,14 @@ func GetAllWebpages() ([]dto.WebpageResponseBody, error) {
 	return webpages, nil
 }
 
-func GetWebpageById(id string) (dto.WebpageFullResponseBodyNew, error) {
+func GetWebpageById(objectId primitive.ObjectID) (dto.WebpageFullResponseBodyNew, error) {
 	var resp dto.WebpageFullResponseBodyNew
-	objectId, _ := primitive.ObjectIDFromHex(id)
-
+	
 	wp, err := repository.FindWebpageById(objectId)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return resp, errors.New("no webpage with the provided id")
+		}
 		return resp, err
 	}
 
@@ -187,12 +192,15 @@ func getFoundtypeStats(wp entity.Webpage) dto.FoundStat {
 	return aggResult
 }
 
-func DeleteWebpage(id string) error {
-	objectId, _ := primitive.ObjectIDFromHex(id)
-	err := repository.DeleteWebpage(objectId)
+func DeleteWebpage(objectId primitive.ObjectID) error {
+	cursor, err := repository.DeleteWebpage(objectId)
+	if(cursor.DeletedCount ==0 ){
+		return errors.New("No webpage with the provided id")
+	}
 	if err != nil {
 		return err
 	}
+	log.Print("del", err)
 	return err
 }
 

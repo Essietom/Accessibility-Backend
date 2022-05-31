@@ -11,7 +11,7 @@ func EnableCors(w *http.ResponseWriter) {
    	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
 
-func ValidationResponse(fields map[string][]string, writer http.ResponseWriter, r *http.Request) {
+func ValidationResponse(fields map[string]string, writer http.ResponseWriter, r *http.Request) {
 	EnableCors(&writer)
 	if (*r).Method == "OPTIONS"{
 		writer.WriteHeader(http.StatusOK)

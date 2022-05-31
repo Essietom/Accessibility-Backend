@@ -15,7 +15,11 @@ var Issue entity.Issue
 func AddIssue(w http.ResponseWriter, r *http.Request) {
 
 	var ish = &dto.IssueRequestBody{}
-	utilities.ParseBodyTest(r, ish, w)
+	err := utilities.ParseBodyTest(r, ish, w)
+	 if err != nil {
+		utilities.ErrorResponse(http.StatusBadRequest, err.Error(), w,r)
+		return
+	}
 	webpageId := r.URL.Query().Get("webpageId")
 
 

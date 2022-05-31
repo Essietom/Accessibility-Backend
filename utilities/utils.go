@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -15,13 +16,14 @@ import (
 
 var validate *validator.Validate
 
-func ParseBodyTest(r *http.Request, x interface{}, w http.ResponseWriter, ) {
+func ParseBodyTest(r *http.Request, x interface{}, w http.ResponseWriter) error{
 	if body, err := ioutil.ReadAll(r.Body); err == nil {
 		if err := json.Unmarshal([]byte(body), x); err != nil {
-		//	ErrorResponse(http.StatusUnprocessableEntity, "Invalid JSON", w)
-			return
+			log.Println("test", err.Error())
+			return err
 		}
 	}
+	return nil
 }
 
 func ParseBody(r *http.Request, x interface{}) {
@@ -32,7 +34,7 @@ func ParseBody(r *http.Request, x interface{}) {
 	}
 }
 
-func ValidateInputs(dataSet interface{}) (bool, map[string][]string) {
+func ValidateInputs(dataSet interface{}) (bool, map[string]string) {
 	validate = validator.New()
 
 	err := validate.Struct(dataSet)
@@ -45,9 +47,10 @@ func ValidateInputs(dataSet interface{}) (bool, map[string][]string) {
 		}
 
 		//Validation errors occurred
-		errors := make(map[string][]string)
+		errors := make(map[string]string)
 		//Use reflector to reverse engineer struct
 		reflected := reflect.ValueOf(dataSet)
+
 		for _, err := range err.(validator.ValidationErrors) {
 
 			//fmt.Println("structf", err.StructField())
@@ -55,6 +58,7 @@ func ValidateInputs(dataSet interface{}) (bool, map[string][]string) {
 
 			// Attempt to find field by name and get json tag name
 			field, _ := reflected.Type().Elem().FieldByName(err.StructField())
+
 			var name string
 
 			//If json tag doesn't exist, use lower case of name
@@ -64,16 +68,16 @@ func ValidateInputs(dataSet interface{}) (bool, map[string][]string) {
 
 			switch err.Tag() {
 			case "required":
-				errors[name] = append(errors[name], "The "+name+" is required")
+				errors[name] = "The "+name+" is required"
 				break
 			case "email":
-				errors[name] = append(errors[name], "The "+name+" should be a valid email")
+				errors[name] = "The "+name+" should be a valid email"
 				break
 			case "eqfield":
-				errors[name] = append(errors[name], "The "+name+" should be equal to the "+err.Param())
+				errors[name] = "The "+name+" should be equal to the "+err.Param()
 				break
 			default:
-				errors[name] = append(errors[name], "The "+name+" is invalid")
+				errors[name] = "The "+name+" is invalid"
 				break
 			}
 		}
