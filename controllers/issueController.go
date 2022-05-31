@@ -75,6 +75,9 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	if updateIssue.Occurence != nil && updateIssue.Occurence[0].Description != "" {
 		issueDetails.Occurence[0].Description = updateIssue.Occurence[0].Description
 	}
+	if updateIssue.Occurence != nil && updateIssue.Occurence[0].Note != "" {
+		issueDetails.Occurence[0].Note = updateIssue.Occurence[0].Note
+	}
 
 	 res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, webpageId, issueId)
 
