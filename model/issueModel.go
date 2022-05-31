@@ -6,6 +6,7 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/repository"
 	"errors"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -169,14 +170,15 @@ func UpdateIssueByIssueIdAndWebpageId(issueUpdateBody *entity.Issue, webpageId s
 
 func UpdateOccurence(occurenceUpdateBody *entity.Occurence, webpageId string, issueId string, occurenceId string) (*entity.Occurence, error) {
 
-	var occurence entity.Occurence
+	// var occurence entity.Occurence
+	var webpage entity.Webpage
+
 	ishId, _ := primitive.ObjectIDFromHex(issueId)	
 	wpId, _ := primitive.ObjectIDFromHex(webpageId)
 	occId, _ := primitive.ObjectIDFromHex(occurenceId)
 
-	err := repository.UpdateOccurence(occurenceUpdateBody, wpId, ishId, occId).Decode(&occurence)
-
-
+	err := repository.UpdateOccurence(occurenceUpdateBody, wpId, ishId, occId).Decode(&webpage)
+	fmt.Println("see web occ", webpage.Issue)
 	if err != nil {
 		return nil, err
 

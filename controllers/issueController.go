@@ -58,6 +58,29 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 	issueId := r.URL.Query().Get("issueId")
 	webpageId := r.URL.Query().Get("webpageId")
+	occurenceId := r.URL.Query().Get("occurenceId")
+
+	
+
+	if(updateIssue.Occurence != nil){
+		var updateOccu = &dto.OccurenceUpdateBody{}
+
+		if updateIssue.Occurence[0].Description != "" {
+			updateOccu.Description = updateIssue.Occurence[0].Description
+		}
+		if updateIssue.Occurence[0].Note != "" {
+			updateOccu.Note = updateIssue.Occurence[0].Note
+		}
+		if updateIssue.Occurence[0].Fix != "" {
+			updateOccu.Fix = updateIssue.Occurence[0].Fix
+		}
+		errCode, errMessage := UpdateOccurence2(issueId, webpageId, occurenceId, *updateOccu)
+		if errCode!=200{
+			utilities.ErrorResponse(errCode, errMessage, w, r)
+			return
+		}
+	}
+
 	issueDetails, err := model.GetIssueByWebpageIdAndIssueId(issueId, webpageId)
 	if err != nil {
 		utilities.ErrorResponse(404, "no issue with the provided id", w, r)
@@ -72,14 +95,10 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 	if updateIssue.Impact != "" {
 		issueDetails.Impact = updateIssue.Impact
 	}
-	if updateIssue.Occurence != nil && updateIssue.Occurence[0].Description != "" {
-		issueDetails.Occurence[0].Description = updateIssue.Occurence[0].Description
-	}
-	if updateIssue.Occurence != nil && updateIssue.Occurence[0].Note != "" {
-		issueDetails.Occurence[0].Note = updateIssue.Occurence[0].Note
-	}
 
-	 res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, webpageId, issueId)
+	
+	res, err := model.UpdateIssueByIssueIdAndWebpageId(issueDetails, webpageId, issueId)
+
 
 	if err != nil {
 		utilities.ErrorResponse(500, err.Error(), w, r)
@@ -89,7 +108,32 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func UpdateOccurence2(issueId string, webpageId string, occurenceId string, updateOccurrence dto.OccurenceUpdateBody) (int, string){
 
+	occurenceDetails, err := model.GetOccurenceById(issueId, webpageId, occurenceId)
+	log.Println("found this occurence:", occurenceDetails)
+	if err != nil {
+		return 404, "no occurence with the provided id"
+	}
+
+
+	if updateOccurrence.Note != "" {
+		occurenceDetails.Note = updateOccurrence.Note
+	}
+	if updateOccurrence.Description != "" {
+		occurenceDetails.Description = updateOccurrence.Description
+	}
+	if updateOccurrence.Fix != "" {
+		occurenceDetails.Fix = updateOccurrence.Fix
+	}
+
+	 res, err := model.UpdateOccurence(occurenceDetails, webpageId, issueId, occurenceId)
+	if err != nil {
+		return 500, err.Error()
+	}
+	return 200, res.ID.Hex()
+
+}
 
 
 func UpdateOccurence(w http.ResponseWriter, r *http.Request) {
