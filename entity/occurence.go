@@ -11,4 +11,6 @@ type Occurence struct {
 	Source      string             `json:"source"`
 	Fix         string             `json:"fix"`
 	Note        string             `json:"note"`
+	NeedsReview        bool             `json:"needsReview"`
+
 }

@@ -12,6 +12,8 @@ type OccurenceRequestBody struct {
 	Source      string             `json:"source"`
 	Fix         string             `json:"fix"`
 	Note        string             `json:"note"`
+	NeedsReview        *bool             `json:"needsReview"`
+
 }
 
 type OccurenceUpdateBody struct {
@@ -20,6 +22,8 @@ type OccurenceUpdateBody struct {
 	Source      string             `json:"source"`
 	Fix         string             `json:"fix"`
 	Note        string             `json:"note"`
+	NeedsReview        *bool             `json:"needsReview"`
+
 }
 
 func (data OccurenceRequestBody) ToOccurenceEntities() *entity.Occurence {
@@ -30,13 +34,32 @@ func (data OccurenceRequestBody) ToOccurenceEntities() *entity.Occurence {
 		Source:       data.Source,
 		Fix:       data.Fix,
 		Note: data.Note,
+		NeedsReview: *data.NeedsReview,
+
 	}
 }
 
 func  GetOccurenceEntities(occurences []OccurenceRequestBody) *[]entity.Occurence{
 	var occurenceEntities []entity.Occurence
 	for _, occurrence := range occurences {	
+		occurrence.fill_defaults()
 		occurenceEntities = append(occurenceEntities, *occurrence.ToOccurenceEntities())
 	}
 	return &occurenceEntities
+}
+
+var (
+	T = true
+	F = false
+)
+// constructor function
+func(occurenceCreate *OccurenceRequestBody) fill_defaults(){
+  
+    // setting default values
+    // if no values present
+    if occurenceCreate.NeedsReview == nil {
+        occurenceCreate.NeedsReview = &F
+    }
+      
+    
 }

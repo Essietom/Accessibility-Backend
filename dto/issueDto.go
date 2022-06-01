@@ -44,6 +44,9 @@ type IssueUpdateBody struct {
 	Occurence   []OccurenceRequestBody         `json:"occurences"`
 	Impact    string             `json:"impact"`
 	Note      string             `json:"note"`
+	Name      string             `json:"name"`
+	Criteria  []entity.Criteria         `json:"criteria"`
+
 }
 
 
