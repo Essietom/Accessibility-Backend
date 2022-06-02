@@ -5,7 +5,6 @@ import (
 	"Accessibility-Backend/entity"
 	"Accessibility-Backend/model"
 	"Accessibility-Backend/utilities"
-	"log"
 	"net/http"
 )
 
@@ -87,7 +86,7 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 			}
 			
 		}  
-		errCode, errMessage := UpdateOccurence2(issueId, webpageId, occurenceId, *updateOccu)
+		errCode, errMessage := UpdateOccurence(issueId, webpageId, occurenceId, *updateOccu)
 		if errCode!=200{
 			utilities.ErrorResponse(errCode, errMessage, w, r)
 			return
@@ -126,7 +125,7 @@ func UpdateIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func UpdateOccurence2(issueId string, webpageId string, occurenceId string, updateOccurrence dto.OccurenceUpdateBody) (int, string){
+func UpdateOccurence(issueId string, webpageId string, occurenceId string, updateOccurrence dto.OccurenceUpdateBody) (int, string){
 
 	occurenceDetails, err := model.GetOccurenceById(issueId, webpageId, occurenceId)
 	if err != nil {
@@ -161,43 +160,6 @@ func UpdateOccurence2(issueId string, webpageId string, occurenceId string, upda
 }
 
 
-func UpdateOccurence(w http.ResponseWriter, r *http.Request) {
-
-	var updateOccurrence = &dto.OccurenceUpdateBody{}
-	utilities.ParseBody(r, updateOccurrence)
-
-	issueId := r.URL.Query().Get("issueId")
-	webpageId := r.URL.Query().Get("webpageId")
-	occurenceId := r.URL.Query().Get("occurenceId")
-
-	occurenceDetails, err := model.GetOccurenceById(issueId, webpageId, occurenceId)
-	log.Println("found this:", occurenceDetails)
-	if err != nil {
-		utilities.ErrorResponse(404, "no occurence with the provided id", w, r)
-		return
-
-	}
-
-
-	if updateOccurrence.Note != "" {
-		occurenceDetails.Note = updateOccurrence.Note
-	}
-	if updateOccurrence.Description != "" {
-		occurenceDetails.Description = updateOccurrence.Description
-	}
-	if updateOccurrence.Fix != "" {
-		occurenceDetails.Fix = updateOccurrence.Fix
-	}
-
-	 res, err := model.UpdateOccurence(occurenceDetails, webpageId, issueId, occurenceId)
-
-	if err != nil {
-		utilities.ErrorResponse(500, err.Error(), w, r)
-		return
-	}
-	utilities.SuccessRespond(res, w, r)
-
-}
 func DeleteIssueByIssueIdAndWebpageId(w http.ResponseWriter, r *http.Request) {
 
 	issueId := r.URL.Query().Get("issueId")
