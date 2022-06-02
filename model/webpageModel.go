@@ -139,58 +139,7 @@ func GetWebpageByField(searchField string, sortByField string, orderBy int, page
 	return webpagesResult, nil
 }
 
-func getImpactStats(wp entity.Webpage) dto.ImpactStat {
 
-	var minorCount int = 0
-	var moderateCount int = 0
-	var seriousCount int = 0
-	var criticalCount int = 0
-	var aggResult dto.ImpactStat
-
-	for _, iss := range wp.Issue {
-		switch iss.Impact {
-		case "serious":
-			seriousCount += len(iss.Occurence)
-		case "minor":
-			minorCount += len(iss.Occurence)
-		case "moderate":
-			moderateCount += len(iss.Occurence)
-		case "critical":
-			criticalCount += len(iss.Occurence)
-		}
-	}
-	aggResult.Critical = criticalCount
-	aggResult.Moderate = moderateCount
-	aggResult.Minor = minorCount
-	aggResult.Serious = seriousCount
-	aggResult.ImpactTotal = minorCount + moderateCount + seriousCount + criticalCount
-
-	return aggResult
-}
-
-func getFoundtypeStats(wp entity.Webpage) dto.FoundStat {
-
-	var automaticCount int = 0
-	var guidedCount int = 0
-	var needsReviewCount int = 0
-	var aggResult dto.FoundStat
-
-	for _, iss := range wp.Issue {
-		switch iss.Found {
-		case "automatic":
-			automaticCount += 1
-		case "guided":
-			guidedCount += 1
-		case "needsReview":
-			needsReviewCount += 1
-		}
-	}
-	aggResult.Automatic = automaticCount
-	aggResult.Guided = guidedCount
-	aggResult.NeedsReview = needsReviewCount
-	aggResult.FoundTotal = automaticCount + guidedCount + needsReviewCount
-	return aggResult
-}
 
 func DeleteWebpage(objectId primitive.ObjectID) error {
 	cursor, err := repository.DeleteWebpage(objectId)
@@ -275,10 +224,13 @@ func getFoundStatNew(wp entity.Webpage) []dto.FoundStatNew {
 			automaticCount += len(iss.Occurence)
 		case "guided":
 			guidedCount += len(iss.Occurence)
-		case "needsReview":
-			needsReviewCount += len(iss.Occurence)
 		case "manual":
 			manualCount += len(iss.Occurence)
+		}
+		for _, occ := range iss.Occurence {
+			if(occ.NeedsReview){
+				needsReviewCount ++
+			}
 		}
 	}
     automaticObject := dto.FoundStatNew{Found: "automatic", Count: automaticCount}
